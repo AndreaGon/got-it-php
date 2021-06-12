@@ -1,0 +1,50 @@
+
+h4{
+  margin-bottom: 20px;
+}
+.custom-link{
+  color: #EC3655;
+  text-decoration: none;
+  padding-bottom: 10px;
+}
+
+.custom-link.active,
+.custom-link:hover {
+  border-bottom: 1px solid #EC3655;
+}
+
+.custom-placeholder{
+  background-color: white;
+  box-shadow: 0px 10px 18px #dedede;
+  height: 170px;
+}
+
+.custom-input, .custom-select{
+  width:400px;
+  padding:10px;
+  border-width: thin;
+  border-radius: 5px 5px 5px 5px;
+  border-color: #dedede;
+}
+
+.custom-textarea{
+  border-width: thin;
+  border-radius: 5px 5px 5px 5px;
+  border-color: #dedede;
+}
+
+.custom-section{
+  margin-bottom: 50px;
+}
+
+.custom-div-section{
+  margin-left: 70px;
+}
+
+.custom-button{
+  background-color: #EC3655;
+  color: white;
+  padding: 20px;
+  width: 200px;
+  border: none;
+}
