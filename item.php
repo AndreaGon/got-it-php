@@ -1,4 +1,17 @@
 <?php
+error_reporting(E_ALL);  //give warning if session cannot start
+session_start(); //start the session
+if(!isset($_SESSION['userID'])){
+    echo'<p>Failed to run session!</p>';
+}
+
+$dbServername = "localhost";
+$dbUsername = "root";
+$dbPassword = "";
+$dbName = "gotit_db";
+
+$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '';
@@ -6,9 +19,10 @@ echo '<head>';
 echo '<meta charset="UTF-8" />';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
 echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-echo '<title>Simple House Template</title>';
+echo '<title>GotIt Lost and Found</title>';
 echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" />';
-echo '<link href="css/templatemo-style.css" rel="stylesheet" />';
+echo '<link href="css/templatemo-style.css" media="all" rel="stylesheet" />';
+echo '<link href="css/custom.css?v=<?php echo time(); " media="all" rel="stylesheet" />';
 echo '</head>';
 echo '<!--';
 echo '';
@@ -22,23 +36,21 @@ echo '';
 echo '<div class="container">';
 echo '<!-- Top box -->';
 echo '<!-- Logo & Site Name -->';
-echo '<div class="placeholder">';
-echo '<div class="parallax-window" data-parallax="scroll" data-image-src="img/simple-house-01.jpg">';
+echo '<div class="custom-placeholder">';
+echo '<div class="parallax-window">';
 echo '<div class="tm-header">';
 echo '<div class="row tm-header-inner">';
 echo '<div class="col-md-6 col-12">';
-echo '<img src="img/simple-house-logo.png" alt="Logo" class="tm-site-logo" />';
 echo '<div class="tm-site-text-box">';
-echo '<h1 class="tm-site-title">Simple House</h1>';
-echo '<h6 class="tm-site-description">new restaurant template</h6>';
+echo '<img class="tm-site-logo" width="150" src = "img/logo.png"/>';
 echo '</div>';
 echo '</div>';
 echo '<nav class="col-md-6 col-12 tm-nav">';
 echo '<ul class="tm-nav-ul">';
-echo '<li class="tm-nav-li"><a href="index.html" class="tm-nav-link active">Home</a></li>';
+echo '<li class="tm-nav-li"><a href="index.php" class="tm-nav-link active">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="login.php" class="tm-nav-link">Login/Register</a></li>';
-echo '<li class="tm-nav-li"><a href="about.html" class="tm-nav-link">About</a></li>';
-echo '<li class="tm-nav-li"><a href="contact.html" class="tm-nav-link">Contact</a></li>';
+echo '<li class="tm-nav-li"><a href="#" class="tm-nav-link">Lost Items</a></li>';
+echo '<li class="tm-nav-li"><a href="#" class="tm-nav-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
 echo '</div>';
@@ -47,49 +59,69 @@ echo '</div>';
 echo '</div>';
 echo '';
 echo '<main>';
-echo '<header class="row tm-welcome-section">';
-echo '<h2 class="col-12 text-center tm-section-title">Recent Lost Items</h2>';
-echo '<p class="col-12 text-center">Total 3 HTML pages are included in this template. Header image has a parallax effect. You can feel free to download, edit and use this TemplateMo layout for your commercial or non-commercial websites.</p>';
-echo '</header>';
-echo '';
-echo '';
-echo '<!-- Gallery -->';
-echo '<div class="row tm-gallery">';
-echo '<!-- gallery page 1 -->';
-echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
-echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12">';
-echo '<figure>';
-echo '<img src="img/eraser.jpg" alt="Image" class="img-fluid tm-gallery-img" />';
-echo '<figcaption>';
-echo '<h4 class="tm-gallery-title">Eraser</h4>';
-echo '<p class="tm-gallery-description">Brief description...</p>';
-echo '<a href="item.php">See item</a>';
-echo '</figcaption>';
-echo '</figure>';
-echo '</article>';
-echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12">';
-echo '<figure>';
-echo '<img src="img/pen.jpg" alt="Image" class="img-fluid" />';
-echo '<figcaption>';
-echo '<h4 class="tm-gallery-title">Pen</h4>';
-echo '<p class="tm-gallery-description">Brief description...</p>';
-echo '<a href="item.php">See item</a>';
-echo '</figcaption>';
-echo '</figure>';
-echo '</article>';
-echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12 tm-gallery-item">';
-echo '<figure>';
-echo '<img src="img/watch.jpg" alt="Image" class="img-fluid tm-gallery-img" />';
-echo '<figcaption>';
-echo '<h4 class="tm-gallery-title">Watch</h4>';
-echo '<p class="tm-gallery-description">Brief description...</p>';
-echo '<a href="item.php">See item</a>';
-echo '</figcaption>';
-echo '</figure>';
-echo '</article>';
-echo '</div> <!-- gallery page 1 -->';
-echo '';
-echo '</div>';
+
+echo "<style>";
+echo "  .itemInfo{";
+echo "    margin-left: 15px";
+echo "}";
+echo "  .contact_additional2{";
+echo "    margin-left: 83px";
+echo "}";
+echo "</style>";
+
+if (isset($_GET['itemInfoID'])) {
+    $itemID = $_GET['itemInfoID'];
+}
+else{
+    echo "<p class=\"itemInfo\"><b>Unable to get parameter!</b></p>";
+}
+$sql_itemInfo = "SELECT * FROM lost_items
+                 WHERE ID = $itemID";
+$retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
+
+if(!$retval_itemInfo){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+
+$result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
+
+if (mysqli_num_rows($result_itemInfo) > 0) {
+    while($row = mysqli_fetch_assoc($result_itemInfo)){
+    $userID = $row['userID'];
+    echo "<img src=\"{$row['image']}\" />";
+    echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
+    echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
+    echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
+    echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
+    echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
+    echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['lost_date']}</p>";
+    echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['lost_time']}</p>";
+    echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
+        
+    $sql_contact = "SELECT * FROM users
+                    WHERE ID = '$userID'";
+    $retval_contact = mysqli_query($conn, $sql_contact);
+    if(!$retval_contact){
+        echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
+    }
+    $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
+    if (mysqli_num_rows($result_contact) > 0){
+        while($row = mysqli_fetch_assoc($result_contact)){
+        echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
+        echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
+        echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+        }
+    }
+    else{
+        echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
+    }
+
+    }
+}
+else{
+    echo "<p style=\"margin-left: 15px;\"><b>Unable to fetch item data!</b></p>";
+} 
+
+mysqli_close ($conn);
+
 echo '</main>';
 echo '';
 echo '<footer class="tm-footer text-center">';
