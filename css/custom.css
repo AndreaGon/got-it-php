@@ -41,10 +41,25 @@ h4{
   margin-left: 70px;
 }
 
+.custom-center{
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
 .custom-button{
   background-color: #EC3655;
   color: white;
   padding: 20px;
   width: 200px;
   border: none;
+}
+
+.custom-table{
+  border:1px solid;
+  border-collapse: collapse;
+}
+
+.custom-div-main{
+  background: transparent;
+  position: relative;
 }

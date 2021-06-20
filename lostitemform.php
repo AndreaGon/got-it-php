@@ -1,11 +1,14 @@
 <?php
-  $dbServername = "remotemysql.com";
-  $dbUsername = "V9rqgUathx";
-  $dbPassword = "DgSrYGWRHD";
-  $dbName = "V9rqgUathx";
+  $dbServername = "db4free.net";
+  $dbUsername = "gotit_db";
+  $dbPassword = "sqlDatabase143";
+  $dbName = "gotit_db";
+  $dbPort = 3306;
 
   $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
   if(isset($_POST['submitted'])){
+    $isSuccess = false;
+
     $itemName = $_POST['item'];
     $category = $_POST['category'];
     $color = $_POST['color'];
@@ -23,9 +26,7 @@
     VALUES " . "('" . "1" . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
 
     if ($conn->query($query) === TRUE) {
-      echo "New record created successfully";
-    } else {
-      echo "Error: " . $query . "<br>" . $conn->error;
+      $isSuccess = true;
     }
 
     $conn->close();
@@ -89,6 +90,14 @@
   echo '<!-- Gallery -->';
   echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
   echo '<form action="lostitemform.php" method="POST" enctype="multipart/form-data">';
+  if(isset($_POST['submitted'])){
+    if($isSuccess){
+      echo '<span style="display: block; backgorund-color: #9ffa91; padding: 20px;">Item reported successfully</span>';
+    }
+    else{
+      echo '<span>Item report failed</span>';
+    }
+  }
   echo '<div style="float:left;" class="custom-div-section">';
   echo '<div class="custom-section">';
   echo '<h4>Name of Item Lost</h4>';
