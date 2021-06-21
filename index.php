@@ -49,7 +49,8 @@ echo '<nav class="col-md-6 col-12 tm-nav">';
 echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-echo '<li class="tm-nav-li"><a href="#" class="custom-link">Lost Items</a></li>';
+echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
+echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
@@ -70,33 +71,47 @@ echo '<div class="row tm-gallery">';
 echo '<!-- gallery page 1 -->';
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
 
+//codes for normal data fetching
 $sql = "SELECT * FROM lost_items";
 $retval = mysqli_query($conn,$sql);
-
 if(!$retval){
     echo "<p style=\"color:red;\">Unable to retreive data.</p>";
 }
-
 $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 
-if (mysqli_num_rows($result) > 0) {
+//codes for counting numbers of lost items that have status 2 (claimed status)
+$claimed_status = 2;
+$sql_totalRows_status2 = "SELECT * FROM lost_items 
+                          WHERE status = $claimed_status";
+$retval_totalRows_status2 = mysqli_query($conn,$sql);
+if(!$retval_totalRows_status2){
+    echo "<p style=\"color:red;\">Unable to retreive data.</p>";
+}
+$result_totalRows_status2 = mysqli_query($conn, $sql_totalRows_status2) or die(mysqli_error($conn));
+$count_status2 = $result_totalRows_status2->num_rows;
+
+
+if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)) {
     while($row = mysqli_fetch_assoc($result)){
-        $itemID = $row['ID'];
-        echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12">';
-        echo '<figure>';
-        echo "<img src=\"data:image/jpeg;base64\" alt=\"Image\" class=\"img-fluid tm-gallery-img\" />";
-        echo '<figcaption>';
-        echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
-        echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
-        echo "<a href=\"item.php?itemInfoID=$itemID\">See item</a>";
-        echo '</figcaption>';
-        echo '</figure>';
-        echo '</article>';
+        if ($row['status']== 0 || $row['status'] == 1){
+            $itemID = $row['ID'];
+            echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12">';
+            echo '<figure>';
+            echo "<img src=\"data:image/jpeg;base64\" alt=\"Image\" class=\"img-fluid tm-gallery-img\" />";
+            echo '<figcaption>';
+            echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
+            echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
+            echo "<a href=\"item.php?itemInfoID=$itemID\">See item</a>";
+            echo '</figcaption>';
+            echo '</figure>';
+            echo '</article>';
+        }
     }
-} 
+}
 else {
     echo '<p><b>Nothing lost recently....</b></p>';
 }
+
 
 mysqli_close ($conn);
 
