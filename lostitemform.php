@@ -47,7 +47,7 @@
   echo '<meta charset="UTF-8" />';
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
   echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-  echo '<title>Simple House Template</title>';
+  echo '<title>GotIt - Lost Item Form</title>';
   echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" />';
   echo '<link href="css/templatemo-style.css" media="all" rel="stylesheet" />';
   echo '<link href="css/custom.css" media="all" rel="stylesheet" />';
@@ -77,8 +77,9 @@
   echo '<ul class="tm-nav-ul">';
   echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
   echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-  echo '<li class="tm-nav-li"><a href="about.html" class="custom-link">About</a></li>';
-  echo '<li class="tm-nav-li"><a href="contact.html" class="custom-link">Contact</a></li>';
+  echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
+  echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
+  echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
   echo '</ul>';
   echo '</nav>';
   echo '</div>';
