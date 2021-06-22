@@ -18,8 +18,9 @@
   INNER JOIN lost_items ON
   matched_items.lost_id = lost_items.id
   INNER JOIN found_items ON matched_items.found_id = found_items.id
-  INNER JOIN users ON matched_items.claimed_by = users.id" or die($conn->error);
-  $result = $conn->query($query);
+  INNER JOIN users ON matched_items.claimed_by = users.id";
+  //$result = $conn->query($query);
+  $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
   if(isset($_POST['submitted'])){
     $matchId = (isset($_POST['matchedId']) ? $_POST['matchedId'] : '');;

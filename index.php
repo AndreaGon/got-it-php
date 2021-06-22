@@ -68,7 +68,7 @@ echo '';
 echo '<!-- Gallery -->';
 echo '<div class="row tm-gallery">';
 echo '<!-- gallery page 1 -->';
-echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
+echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
 
 $sql = "SELECT * FROM lost_items";
 $retval = mysqli_query($conn,$sql);
@@ -78,22 +78,20 @@ if(!$retval){
 }
 
 $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-
+$path = "/tmp/images";
 if (mysqli_num_rows($result) > 0) {
     while($row = mysqli_fetch_assoc($result)){
         $itemID = $row['ID'];
-        echo '<article class="col-lg-3 col-md-4 col-sm-6 col-12">';
-        echo '<figure>';
-        echo "<img src=\"data:image/jpeg;base64\" alt=\"Image\" class=\"img-fluid tm-gallery-img\" />";
-        echo '<figcaption>';
+        $image = $row["image"];
+
+        echo '<article class="custom-item-container">';
+        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
         echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
         echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
-        echo "<a href=\"item.php?itemInfoID=$itemID\">See item</a>";
-        echo '</figcaption>';
-        echo '</figure>';
+        echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
         echo '</article>';
     }
-} 
+}
 else {
     echo '<p><b>Nothing lost recently....</b></p>';
 }

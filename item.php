@@ -86,7 +86,9 @@ $result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn)
 if (mysqli_num_rows($result_itemInfo) > 0) {
     while($row = mysqli_fetch_assoc($result_itemInfo)){
     $userID = $row['userID'];
-    echo "<img src=\"{$row['image']}\" />";
+    $image = $row["image"];
+    echo '<div class="custom-item-profile">';
+    echo '<div style="float:left;" class="custom-div-section item-section extra-margin-left">';
     echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
     echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
     echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
@@ -95,7 +97,8 @@ if (mysqli_num_rows($result_itemInfo) > 0) {
     echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['lost_date']}</p>";
     echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['lost_time']}</p>";
     echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
-        
+
+
     $sql_contact = "SELECT * FROM users
                     WHERE ID = '$userID'";
     $retval_contact = mysqli_query($conn, $sql_contact);
@@ -115,10 +118,15 @@ if (mysqli_num_rows($result_itemInfo) > 0) {
     }
 
     }
+    echo '</div>';
+    echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
+    echo '<img class="custom-item-image" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    echo '</div>';
+    echo '</div>';
 }
 else{
     echo "<p style=\"margin-left: 15px;\"><b>Unable to fetch item data!</b></p>";
-} 
+}
 
 mysqli_close ($conn);
 

@@ -1,7 +1,13 @@
 <?php
-  $dbServername = "db4free.net";
-  $dbUsername = "gotit_db";
-  $dbPassword = "sqlDatabase143";
+  error_reporting(E_ALL);  //give warning if session cannot start
+  session_start(); //start the session
+  if(!isset($_SESSION['userID'])){
+      echo'<p>Failed to run session!</p>';
+  }
+
+  $dbServername = "localhost";
+  $dbUsername = "root";
+  $dbPassword = "";
   $dbName = "gotit_db";
   $dbPort = 3306;
 
@@ -17,13 +23,13 @@
     $date = $_POST['date'];
     $time = $_POST['time'];
     $location = $_POST['location'];
-    $image = $_FILES['image']['name'];
+    $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
 
     if(empty($color)) $color = NULL;
     if(empty($brand)) $brand = NULL;
 
     $query = "INSERT INTO lost_items (userID, itemName, category, color, brand, description, lost_date, lost_time, location, image, status)
-    VALUES " . "('" . "1" . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
+    VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
 
     if ($conn->query($query) === TRUE) {
       $isSuccess = true;
