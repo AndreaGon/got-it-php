@@ -79,17 +79,31 @@ if(!$retval){
 }
 $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 $path = "/tmp/images";
-if (mysqli_num_rows($result) > 0) {
-    while($row = mysqli_fetch_assoc($result)){
-        $itemID = $row['ID'];
-        $image = $row["image"];
 
-        echo '<article class="custom-item-container">';
-        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-        echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
-        echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
-        echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
-        echo '</article>';
+//codes for counting numbers of lost items that have status 2 (claimed status)
+$claimed_status = 2;
+$sql_totalRows_status2 = "SELECT * FROM lost_items 
+                          WHERE status = $claimed_status";
+$retval_totalRows_status2 = mysqli_query($conn,$sql);
+if(!$retval_totalRows_status2){
+    echo "<p style=\"color:red;\">Unable to retreive data.</p>";
+}
+$result_totalRows_status2 = mysqli_query($conn, $sql_totalRows_status2) or die(mysqli_error($conn));
+$count_status2 = $result_totalRows_status2->num_rows;
+
+if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)) {
+    while($row = mysqli_fetch_assoc($result)){
+        if ($row['status']== 0 || $row['status'] == 1){
+            $itemID = $row['ID'];
+            $image = $row["image"];
+    
+            echo '<article class="custom-item-container">';
+            echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+            echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
+            echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
+            echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
+            echo '</article>';
+        }
     }
 }
 else {
