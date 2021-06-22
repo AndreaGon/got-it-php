@@ -49,7 +49,8 @@ echo '<nav class="col-md-6 col-12 tm-nav">';
 echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-echo '<li class="tm-nav-li"><a href="#" class="custom-link">Lost Items</a></li>';
+echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
+echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
@@ -70,13 +71,12 @@ echo '<div class="row tm-gallery">';
 echo '<!-- gallery page 1 -->';
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
 
+//codes for normal data fetching
 $sql = "SELECT * FROM lost_items";
 $retval = mysqli_query($conn,$sql);
-
 if(!$retval){
     echo "<p style=\"color:red;\">Unable to retreive data.</p>";
 }
-
 $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 $path = "/tmp/images";
 if (mysqli_num_rows($result) > 0) {
@@ -95,6 +95,7 @@ if (mysqli_num_rows($result) > 0) {
 else {
     echo '<p><b>Nothing lost recently....</b></p>';
 }
+
 
 mysqli_close ($conn);
 
