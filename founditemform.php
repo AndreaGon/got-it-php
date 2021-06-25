@@ -1,4 +1,10 @@
 <?php
+  error_reporting(E_ALL);  //give warning if session cannot start
+  session_start(); //start the session
+  if(!isset($_SESSION['userID'])){
+      echo'<p>Failed to run session!</p>';
+  }
+
   $dbServername = "db4free.net";
   $dbUsername = "gotit_db";
   $dbPassword = "sqlDatabase143";
@@ -23,7 +29,7 @@
     if(empty($brand)) $brand = NULL;
 
     $query = "INSERT INTO found_items (userID, itemName, category, color, brand, description, found_date, found_time, location, image, status)
-    VALUES " . "('" . "1" . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
+    VALUES " . "('" . $SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
 
     if ($conn->query($query) === TRUE) {
       $isSuccess = true;
