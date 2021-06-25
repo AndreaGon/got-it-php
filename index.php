@@ -51,7 +51,7 @@ echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home<
 echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
+echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
 echo '</div>';
@@ -82,7 +82,7 @@ $path = "/tmp/images";
 
 //codes for counting numbers of lost items that have status 2 (claimed status)
 $claimed_status = 2;
-$sql_totalRows_status2 = "SELECT * FROM lost_items 
+$sql_totalRows_status2 = "SELECT * FROM lost_items
                           WHERE status = $claimed_status";
 $retval_totalRows_status2 = mysqli_query($conn,$sql);
 if(!$retval_totalRows_status2){
@@ -96,7 +96,7 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
         if ($row['status']== 0 || $row['status'] == 1){
             $itemID = $row['ID'];
             $image = $row["image"];
-    
+
             echo '<article class="custom-item-container">';
             echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
             echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";

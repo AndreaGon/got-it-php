@@ -1,4 +1,23 @@
 <?php
+error_reporting(E_ALL);  //give warning if session cannot start
+session_start(); //start the session
+$_SESSION['userID'] = 1;
+if(!isset($_SESSION['userID'])){
+    echo'<p>Failed to run session!</p>';
+}
+
+$dbServername = "localhost";
+$dbUsername = "root";
+$dbPassword = "";
+$dbName = "gotit_db";
+
+$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+
+
+$STATUS_PENDING = "PENDING MATCH";
+$STATUS_MATCHED = "ITEM MATCHED";
+$STATUS_FOUND = "FOUND";
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '';
@@ -6,9 +25,10 @@ echo '<head>';
 echo '<meta charset="UTF-8" />';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
 echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-echo '<title>Simple House Template</title>';
+echo '<title>GotIt Lost and Found</title>';
 echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" />';
-echo '<link href="css/templatemo-style.css" rel="stylesheet" />';
+echo '<link href="css/templatemo-style.css" media="all" rel="stylesheet" />';
+echo '<link href="css/custom.css?v=<?php echo time(); " media="all" rel="stylesheet" />';
 echo '</head>';
 echo '<!--';
 echo '';
@@ -22,23 +42,22 @@ echo '';
 echo '<div class="container">';
 echo '<!-- Top box -->';
 echo '<!-- Logo & Site Name -->';
-echo '<div class="placeholder">';
-echo '<div class="parallax-window" data-parallax="scroll" data-image-src="img/simple-house-01.jpg">';
+echo '<div class="custom-placeholder">';
+echo '<div class="parallax-window">';
 echo '<div class="tm-header">';
 echo '<div class="row tm-header-inner">';
 echo '<div class="col-md-6 col-12">';
-echo '<img src="img/simple-house-logo.png" alt="Logo" class="tm-site-logo" />';
 echo '<div class="tm-site-text-box">';
-echo '<h1 class="tm-site-title">Simple House</h1>';
-echo '<h6 class="tm-site-description">new restaurant template</h6>';
+echo '<img class="tm-site-logo" width="150" src = "img/logo.png"/>';
 echo '</div>';
 echo '</div>';
 echo '<nav class="col-md-6 col-12 tm-nav">';
 echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="tm-nav-link active">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="login.php" class="tm-nav-link">Login/Register</a></li>';
-echo '<li class="tm-nav-li"><a href="about.html" class="tm-nav-link">About</a></li>';
-echo '<li class="tm-nav-li"><a href="contact.html" class="tm-nav-link">Contact</a></li>';
+echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
+echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
+echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
 echo '</div>';
@@ -47,14 +66,73 @@ echo '</div>';
 echo '</div>';
 echo '';
 echo '<main>';
-echo '<header class="row tm-welcome-section">';
-echo '<h2 class="col-12 text-center tm-section-title">User Dashboard</h2>';
-echo '<p class="col-12 text-center">Total 3 HTML pages are included in this template. Header image has a parallax effect. You can feel free to download, edit and use this TemplateMo layout for your commercial or non-commercial websites.</p>';
-echo '</header>';
-echo '';
-echo '';
-echo '';
+$id = $_SESSION['userID'];
+$sql_itemInfo = "SELECT * FROM users
+                 WHERE ID = $id";
+$retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
+
+if(!$retval_itemInfo){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+
+$result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
+
+if (mysqli_num_rows($result_itemInfo) > 0) {
+  while($row = mysqli_fetch_assoc($result_itemInfo)){
+    echo '<div class="custom-item-profile">';
+    echo '<div style="float:left;" class="custom-div-section item-section extra-margin-left">';
+    echo "<h2 align=\"left\" class=\"col-12 tm-section-title\"><b>User Profile</b></h2>";
+    echo '<p><b>Username:</b> ' . $row['username']; '</p>';
+    echo '<p><b>Email:</b> ' . $row['email']; '</p>';
+    echo '<p><b>Contact Number:</b> ' . $row['contact_no']; '</p>';
+    echo '<p><b>Address:</b> ' . $row['address']; '</p>';
+    echo '</div>';
+    echo '</div>';
+  }
+}
+
+echo '<div class="custom-item-profile">';
+echo '<div style="float:left; margin-top:-50px;" class="custom-div-section extra-margin-left">';
+
+$sql_lostItems = "SELECT * FROM lost_items
+                 WHERE userID = $id";
+$retval_lostItems = mysqli_query($conn, $sql_itemInfo);
+
+if(!$retval_lostItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+
+$result_lostItems = mysqli_query($conn, $sql_lostItems) or die(mysqli_error($conn));
+
+echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
+echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
+if (mysqli_num_rows($result_lostItems) > 0) {
+  while($row = mysqli_fetch_assoc($result_lostItems)){
+    if ($row['status']== 0 || $row['status'] == 1){
+        $itemID = $row['ID'];
+        $image = $row["image"];
+
+        echo '<article class="custom-item-container">';
+        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+        echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
+        echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
+        switch($row['status']){
+          case 0:
+            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
+            break;
+          case 1:
+            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
+            break;
+          case 2:
+            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_FOUND}</p>";
+            break;
+        }
+        echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
+        echo '</article>';
+    }
+  }
+}
 echo '</div>';
+echo '</div>';
+echo '</div>';
+
+
 echo '</main>';
 echo '';
 echo '<footer class="tm-footer text-center">';
