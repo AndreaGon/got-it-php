@@ -1,15 +1,16 @@
 <?php
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
-$_SESSION['userID'] = 1;
+$_SESSION['userID'];
 if(!isset($_SESSION['userID'])){
     echo'<p>Failed to run session!</p>';
 }
 
-$dbServername = "localhost";
-$dbUsername = "root";
-$dbPassword = "";
+$dbServername = "db4free.net";
+$dbUsername = "gotit_db";
+$dbPassword = "sqlDatabase143";
 $dbName = "gotit_db";
+$dbPort = 3306;
 
 $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
 
@@ -67,19 +68,19 @@ echo '</div>';
 echo '';
 echo '<main>';
 $id = $_SESSION['userID'];
-$sql_itemInfo = "SELECT * FROM users
+$sql_userInfo = "SELECT * FROM users
                  WHERE ID = $id";
-$retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
+$retval_userInfo = mysqli_query($conn, $sql_userInfo);
 
-if(!$retval_itemInfo){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+if(!$retval_userInfo){echo '<p class=\"itemInfo\"><b>Error displaying user data...</b></p>';}
 
-$result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
+$result_userInfo = mysqli_query($conn, $sql_userInfo) or die(mysqli_error($conn));
 
-if (mysqli_num_rows($result_itemInfo) > 0) {
-  while($row = mysqli_fetch_assoc($result_itemInfo)){
+if (mysqli_num_rows($result_userInfo) > 0) {
+  while($row = mysqli_fetch_assoc($result_userInfo)){
     echo '<div class="custom-item-profile">';
     echo '<div style="float:left;" class="custom-div-section item-section extra-margin-left">';
-    echo "<h2 align=\"left\" class=\"col-12 tm-section-title\"><b>User Profile</b></h2>";
+    echo "<h2 float=\"left\" class=\"tm-section-title\"><b>User Profile</b></h2>";
     echo '<p><b>Username:</b> ' . $row['username']; '</p>';
     echo '<p><b>Email:</b> ' . $row['email']; '</p>';
     echo '<p><b>Contact Number:</b> ' . $row['contact_no']; '</p>';
@@ -90,43 +91,44 @@ if (mysqli_num_rows($result_itemInfo) > 0) {
 }
 
 echo '<div class="custom-item-profile">';
-echo '<div style="float:left; margin-top:-50px;" class="custom-div-section extra-margin-left">';
+echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
 
 $sql_lostItems = "SELECT * FROM lost_items
                  WHERE userID = $id";
-$retval_lostItems = mysqli_query($conn, $sql_itemInfo);
+$retval_lostItems = mysqli_query($conn, $sql_lostItems);
 
 if(!$retval_lostItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
 
 $result_lostItems = mysqli_query($conn, $sql_lostItems) or die(mysqli_error($conn));
 
-echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
+echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
 if (mysqli_num_rows($result_lostItems) > 0) {
   while($row = mysqli_fetch_assoc($result_lostItems)){
-    if ($row['status']== 0 || $row['status'] == 1){
-        $itemID = $row['ID'];
-        $image = $row["image"];
+    $itemID = $row['ID'];
+    $image = $row["image"];
 
-        echo '<article class="custom-item-container">';
-        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-        echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
-        echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
-        switch($row['status']){
-          case 0:
-            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
-            break;
-          case 1:
-            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
-            break;
-          case 2:
-            echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_FOUND}</p>";
-            break;
-        }
-        echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
-        echo '</article>';
+    echo '<article class="custom-item-container">';
+    echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
+    echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
+    switch($row['status']){
+      case 0:
+        echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
+        break;
+      case 1:
+        echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
+        break;
+      case 2:
+        echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_FOUND}</p>";
+        break;
     }
-  }
+    echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
+    if ($row['status'] == 1){
+        echo "<a class='custom-link button'  style='margin-top:30px;margin-left:10px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
+    }
+    echo '</article>';
+    }
 }
 echo '</div>';
 echo '</div>';
