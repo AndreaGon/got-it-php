@@ -1,7 +1,7 @@
 <?php
-  $dbServername = "localhost";
-  $dbUsername = "root";
-  $dbPassword = "";
+  $dbServername = "db4free.net";
+  $dbUsername = "gotit_db";
+  $dbPassword = "sqlDatabase143";
   $dbName = "gotit_db";
   $dbPort = 3306;
   $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
@@ -12,26 +12,26 @@
   lost_items.id AS lost_id,
   found_items.id AS found_id,
   lost_items.itemName AS lost_name,
-  found_items.itemName AS found_name,
-  users.username AS username
+  found_items.itemName AS found_name
   FROM matched_items
   INNER JOIN lost_items ON
   matched_items.lost_id = lost_items.id
-  INNER JOIN found_items ON matched_items.found_id = found_items.id
-  INNER JOIN users ON matched_items.claimed_by = users.id";
+  INNER JOIN found_items ON matched_items.found_id = found_items.id";
   //$result = $conn->query($query);
   $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
   if(isset($_POST['submitted'])){
-    $matchId = (isset($_POST['matchedId']) ? $_POST['matchedId'] : '');;
-    switch($_POST['submit']){
-      case "Approve": $update = "UPDATE matched_items SET status = 3 WHERE id = " . $matchId;
+    $matchId = (isset($_POST['matchedId']) ? $_POST['matchedId'] : '');
+    $isApprove = $_POST['submit'];
+    switch($isApprove){
+      case "Approve": $update = "UPDATE matched_items SET status = 1 WHERE id = " . $matchId;
                       break;
-      case "Deny":    $update = "UPDATE matched_items SET status = 0 WHERE id = " . $matchId;
+      case "Deny":    $update = "UPDATE matched_items SET status = 2 WHERE id = " . $matchId;
                       break;
-    }
-  }
 
+    }
+    $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+  }
 
   echo '<!DOCTYPE html>';
   echo '<html>';
@@ -82,22 +82,24 @@
   echo '</header>';
   echo '';
   echo '<div class="custom-center" style="width: 100%">';
-  echo '<table class = "custom-table" border="1" width=1000 height=150>';
+  echo '<table class = "custom-table" border="1" width=1000 height=80>';
   echo '<tr>';
   echo '<th>ITEM LOST</th>';
   echo '<th>ITEM CLAIMED</th>';
-  echo '<th>CLAIMED BY</th>';
   echo '<th>ACTION</th>';
   echo '</tr>';
   while($row = $result->fetch_assoc()){
       echo '<tr>';
       echo    '<td>'.$row['lost_name'].'</td>';
       echo    '<td>'.$row['found_name'].'</td>';
-      echo    '<td>'.$row['username'].'</td>';
       echo    '<td>
+                  <form action="bothitem.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
+                    <input type=\'hidden\' name="lostId" value="'.$row['lost_id'].'"/>
+                    <input type=\'hidden\' name="foundId" value="'.$row['found_id'].'"/>
+                    <input type="Submit" class="custom-button" name="submit" value="Info"/>
+                  </form>
                   <form action="admin.php" method="POST">
-                    <input type=\'hidden\' name="matchedId" value="'.$row['matched_id'].
-                    '"/><a class="custom-button" href="founditemform.php">Info</a>
+                    <input type=\'hidden\' name="matchedId" value="'.$row['matched_id'].'"/>
                     <input type="Submit" class="custom-button" name="submit" value="Approve"/>
                     <input type="Submit" class="custom-button" name="submit" value="Deny"/>
                     <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
@@ -112,9 +114,6 @@
   echo '</main>';
   echo '';
   echo '<footer class="tm-footer text-center">';
-  echo '<p>Copyright &copy; 2020 Simple House';
-  echo '';
-  echo '| Design: <a rel="nofollow" href="https://templatemo.com">TemplateMo</a></p>';
   echo '</footer>';
   echo '</div>';
   echo '<script src="js/jquery.min.js"></script>';

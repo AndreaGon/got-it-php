@@ -5,9 +5,9 @@
       echo'<p>Failed to run session!</p>';
   }
 
-  $dbServername = "localhost";
-  $dbUsername = "root";
-  $dbPassword = "";
+  $dbServername = "db4free.net";
+  $dbUsername = "gotit_db";
+  $dbPassword = "sqlDatabase143";
   $dbName = "gotit_db";
   $dbPort = 3306;
 

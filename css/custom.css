@@ -80,6 +80,14 @@ h4{
   object-fit: cover;
 }
 
+
+.custom-item-image-medium{
+  width:370px;
+  height:200px;
+  background-size: cover;
+  object-fit: cover;
+}
+
 .custom-item-thumbnail{
   width:270px;
   height:200px;
@@ -101,4 +109,8 @@ h4{
 
 .extra-margin-right{
   margin-right: 120px;
+}
+
+.custom-div-height{
+  height:1000px;
 }
