@@ -71,6 +71,8 @@ echo "    margin-left: 83px";
 echo "}";
 echo "</style>";
 
+echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-top:75px; margin-left:120px\"><b>Matched Items</b></h2>";
+
 if (isset($_GET['lostID'])) {
     $lostID = $_GET['lostID'];
 }
