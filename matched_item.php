@@ -79,7 +79,7 @@ else{
 }
 $sql_matchedItems = "SELECT * FROM matched_items
                     WHERE lost_id = $lostID";
-$retval_matchedItems = mysqli_query($conn, $sql_matchedItem);
+$retval_matchedItems = mysqli_query($conn, $sql_matchedItems);
 
 if(!$retval_matchedItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
 
@@ -91,7 +91,7 @@ if (mysqli_num_rows($result_matchedItems) > 0) {
 
     $sql_foundItems = "SELECT * FROM found_items
                         WHERE ID = $foundItemID";
-    $retval_foundItems = mysqli_query($conn, $sql_foundItem);
+    $retval_foundItems = mysqli_query($conn, $sql_foundItems);
     if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
     $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
     
