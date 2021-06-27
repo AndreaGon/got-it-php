@@ -47,7 +47,7 @@
   echo '<meta charset="UTF-8" />';
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
   echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-  echo '<title>GotIt - Found Item Form</title>';
+  echo '<title>Got It - Found Item Form</title>';
   echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" />';
   echo '<link href="css/templatemo-style.css" media="all" rel="stylesheet" />';
   echo '<link href="css/custom.css" media="all" rel="stylesheet" />';
