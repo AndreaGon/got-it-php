@@ -39,7 +39,7 @@ echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home<
 echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-echo '<li class="tm-nav-li"><a href="#" class="custom-link">Dashboard</a></li>';
+echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
 echo '</ul>';
 echo '</nav>';
 echo '</div>';
