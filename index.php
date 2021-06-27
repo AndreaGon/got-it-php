@@ -99,6 +99,12 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
             $image = $row["image"];
 
             echo '<article class="custom-item-container">';
+            if($image != null){
+                echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+            }
+            else{
+                echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+            }
             echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
             echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
             echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
