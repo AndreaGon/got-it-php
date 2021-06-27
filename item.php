@@ -122,7 +122,12 @@ if (mysqli_num_rows($result_itemInfo) > 0) {
     }
     echo '</div>';
     echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
-    echo '<img class="custom-item-image" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    if($image != null){
+         echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    }
+    else{
+         echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+    }
     echo '</div>';
     echo '</div>';
 }
