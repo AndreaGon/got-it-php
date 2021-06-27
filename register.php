@@ -6,7 +6,7 @@ echo '<head>';
 echo '<meta charset="UTF-8" />';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
 echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-echo '<title>GotIt - Register</title>';
+echo '<title>Got It - Register</title>';
 echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />';
 echo '<link href="css/all.min.css" rel="stylesheet" />';
 echo '<link href="css/templatemo-style.css" rel="stylesheet" />';
