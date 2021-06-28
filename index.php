@@ -105,7 +105,6 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
             else{
                 echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
             }
-            echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
             echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
             echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
             echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
