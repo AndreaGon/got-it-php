@@ -109,7 +109,12 @@ if (mysqli_num_rows($result_lostItems) > 0) {
     $image = $row["image"];
 
     echo '<article class="custom-item-container">';
-    echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    if($image != null){
+        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+    }
+    else{
+        echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+    }
     echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
     echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
     switch($row['status']){
