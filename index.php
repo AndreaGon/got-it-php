@@ -100,7 +100,7 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
 
             echo '<article class="custom-item-container">';
             if($image != null){
-                echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+                echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
             }
             else{
                 echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
