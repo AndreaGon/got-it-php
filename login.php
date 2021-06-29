@@ -1,6 +1,5 @@
 <?php
 error_reporting(E_ALL);  //give warning if session cannot start
-session_start(); //start the session
   
 $dbServername = "db4free.net";
 $dbUsername = "gotit_db";
@@ -22,25 +21,26 @@ if(isset($_POST['submitted'])){
 
     //pulling a certain section of the database into the scope of the code
     $credentials = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
-    $result_login = mysqli_query($conn, $credentials) or die(mysqli_error($conn));
-    
+    //$result_login = mysqli_query($conn, $credentials) or die(mysqli_error($conn));
+    $result_login = $conn->query($credentials);
+
     //validating credentials
-    if($row = mysqli_num_rows($result_login) > 0){
-        //telling the system that the user is entitled to be logged in
-        $_SESSION['userID'] = $row['ID'];
-        $_SESSION['loggedin'] = true;
-        
-        //redirecting user to home page
-        header("location: index.php");
+    if($conn->query($credentials) == true){
+        while($row = mysqli_fetch_assoc($result_login)){
+            //telling the system that the user is entitled to be logged in
+            session_start(); //start the session
+            $_SESSION['userID'] = $row['ID'];
+            $_SESSION['loggedin'] = true;
+
+            //redirecting user to home page
+            header("location: index.php");
+        }
     }
     else{
         //display error message if email and password do not match data in the database
         $credential_error = "Email and password are incorrect";
     }
   
-    if ($conn->query($query) === TRUE) {
-        $isSuccess = true;
-    }
   
     $conn->close();
 
