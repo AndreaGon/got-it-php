@@ -3,12 +3,12 @@ error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 $_SESSION['userID'];
 if(!isset($_SESSION['userID'])){
-    echo'<p>Failed to run session!</p>';
+    header("Location:login.php");
 }
 
-$dbServername = "db4free.net";
-$dbUsername = "gotit_db";
-$dbPassword = "sqlDatabase143";
+$dbServername = "localhost";
+$dbUsername = "root";
+$dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
@@ -55,10 +55,14 @@ echo '</div>';
 echo '<nav class="col-md-6 col-12 tm-nav">';
 echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="tm-nav-link active">Home</a></li>';
-echo '<li class="tm-nav-li"><a href="login.php" class="tm-nav-link">Login/Register</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+if(!isset($_SESSION['userID'])){
+    echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
+}
+else{
+  echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+}
 echo '</ul>';
 echo '</nav>';
 echo '</div>';
@@ -85,6 +89,8 @@ if (mysqli_num_rows($result_userInfo) > 0) {
     echo '<p><b>Email:</b> ' . $row['email']; '</p>';
     echo '<p><b>Contact Number:</b> ' . $row['contact_no']; '</p>';
     echo '<p><b>Address:</b> ' . $row['address']; '</p>';
+    echo '<br/>';
+    echo '<a href="logout.php">Logout of your account</a>';
     echo '</div>';
     echo '</div>';
   }
@@ -108,7 +114,7 @@ if (mysqli_num_rows($result_lostItems) > 0) {
     $itemID = $row['ID'];
     $image = $row["image"];
 
-    echo '<article class="custom-item-container">';
+    echo '<article class="custom-item-container" style="overflow-x: hidden;">';
     if($image != null){
         echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
     }
@@ -116,7 +122,7 @@ if (mysqli_num_rows($result_lostItems) > 0) {
         echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
     }
     echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
-    echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
+    echo "<p style='overflow-x: hidden;' class=\"tm-gallery-description\">{$row['description']}</p>";
     switch($row['status']){
       case 0:
         echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";

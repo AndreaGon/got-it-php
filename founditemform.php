@@ -2,12 +2,12 @@
   error_reporting(E_ALL);  //give warning if session cannot start
   session_start(); //start the session
   if(!isset($_SESSION['userID'])){
-      echo'<p>Failed to run session!</p>';
+      header("Location:login.php");
   }
 
-  $dbServername = "db4free.net";
-  $dbUsername = "gotit_db";
-  $dbPassword = "sqlDatabase143";
+  $dbServername = "localhost";
+  $dbUsername = "root";
+  $dbPassword = "";
   $dbName = "gotit_db";
   $dbPort = 3306;
 
@@ -29,7 +29,7 @@
     if(empty($brand)) $brand = NULL;
 
     $query = "INSERT INTO found_items (userID, itemName, category, color, brand, description, found_date, found_time, location, image, status)
-    VALUES " . "('" . $SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
+    VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
 
     if ($conn->query($query) === TRUE) {
       $isSuccess = true;
@@ -76,10 +76,14 @@
   echo '<nav class="col-md-6 col-12 tm-nav">';
   echo '<ul class="tm-nav-ul">';
   echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
-  echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
   echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
   echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-  echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+  if(!isset($_SESSION['userID'])){
+      echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
+  }
+  else{
+    echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+  }
   echo '</ul>';
   echo '</nav>';
   echo '</div>';
