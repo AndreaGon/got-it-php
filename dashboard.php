@@ -18,6 +18,16 @@ $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
 $STATUS_PENDING = "PENDING MATCH";
 $STATUS_MATCHED = "ITEM MATCHED";
 $STATUS_FOUND = "FOUND";
+$STUATUS_CLAIMED = "CLAIMED";
+
+
+if(isset($_POST['submitted'])){
+  $action = $_POST['submit'];
+  $foundID = $_POST['foundID'];
+  $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
+            header("Refresh:0");
+  $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+}
 
 echo '<!DOCTYPE html>';
 echo '<html>';
@@ -119,7 +129,7 @@ if (mysqli_num_rows($result_lostItems) > 0) {
         echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
     }
     else{
-        echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+        echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
     }
     echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
     echo "<p style='overflow-x: hidden;' class=\"tm-gallery-description\">{$row['description']}</p>";
@@ -139,6 +149,65 @@ if (mysqli_num_rows($result_lostItems) > 0) {
         echo "<a class='custom-link button'  style='margin-top:30px;margin-left:10px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
     }
     echo '</article>';
+    }
+}
+echo '</div>';
+echo '</div>';
+
+echo '<div class="custom-item-profile" style="margin-bottom:50px;">';
+echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
+echo '</div>';
+echo '</div>';
+
+echo '<div class="custom-item-profile">';
+echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
+
+$sql_foundItems = "SELECT * FROM found_items
+                 WHERE userID = $id";
+$retval_foundItems = mysqli_query($conn, $sql_foundItems);
+
+if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+
+$result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
+
+echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
+echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
+if (mysqli_num_rows($result_foundItems) > 0) {
+  while($row = mysqli_fetch_assoc($result_foundItems)){
+    if ($row['status']!=3){
+      $foundItemID = $row['ID'];
+      $image = $row["image"];
+  
+      echo '<article class="custom-item-container" style="overflow-x: hidden;">';
+      if($image != null){
+          echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
+      }
+      else{
+          echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
+      }
+      echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
+      echo "<p style='overflow-x: hidden;' class=\"tm-gallery-description\">{$row['description']}</p>";
+      switch($row['status']){
+        case 0:
+          echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
+          break;
+        case 1:
+          echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
+          break;
+        case 2:
+          echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_CLAIMED}</p>";
+          break;
+      }
+      echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$foundItemID\">See item</a>";
+      if ($row['status'] != 3){
+        echo "<form action=\"dashboard.php\" method=\"POST\">";
+        echo "<input type=\"hidden\" name=\"foundID\" value=\"$foundItemID\"/>";
+        echo "<input type=\"Submit\" style=\"width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+        echo "<input type=\"hidden\" name=\"submitted\" value=\"true\"/>";
+        echo "</form>";
+      }
+      echo '</article>';
+    }  
     }
 }
 echo '</div>';
