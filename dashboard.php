@@ -169,7 +169,7 @@ if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item dat
 
 $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
 
-echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
+echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Found Items</b></h2>";
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
 if (mysqli_num_rows($result_foundItems) > 0) {
   while($row = mysqli_fetch_assoc($result_foundItems)){
