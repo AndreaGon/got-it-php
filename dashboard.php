@@ -154,13 +154,12 @@ if (mysqli_num_rows($result_lostItems) > 0) {
 echo '</div>';
 echo '</div>';
 
-echo '<div class="custom-item-profile" style="margin-bottom:50px;">';
-echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
-echo '</div>';
-echo '</div>';
 
 echo '<div class="custom-item-profile">';
 echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
+
+echo '<div class="custom-item-profile">';
+echo '</div>';
 
 $sql_foundItems = "SELECT * FROM found_items
                  WHERE userID = $id";
