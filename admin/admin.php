@@ -25,27 +25,27 @@
     $action = $_POST['submit'];
     switch($action){
       case "Approve": $update = "UPDATE matched_items SET status = 1 WHERE id = " . $matchId;
+                      $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
                       header("Refresh:0");
                       break;
       case "Deny":    $update = "UPDATE matched_items SET status = 2 WHERE id = " . $matchId;
+                      $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
                       header("Refresh:0");
                       break;
       case "Start Automatic Match":
-            echo "Hello";
             $url = 'http://127.0.0.1:5000/api/startmatch';
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_HTTPGET, true);
             curl_setopt($curl, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json'
             ]);
             $response = curl_exec($curl);
-            echo $response;
             curl_close($curl);
             break;
 
     }
-    $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+
   }
 
   echo '<!DOCTYPE html>';
@@ -105,6 +105,7 @@
     echo '<div class="custom-center" style="width: 100%">';
     echo '<table class = "custom-table" border="1" width=1000 height=80>';
     echo '<form action="admin.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
+          <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
           <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Start Automatic Match"/>
         </form>';
     echo '<tr>';

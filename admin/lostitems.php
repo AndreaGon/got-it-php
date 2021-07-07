@@ -67,8 +67,8 @@
   echo '</div>';
   echo '<nav class="col-md-6 col-12 tm-nav">';
   echo '<ul class="tm-nav-ul">';
-  echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link active">Verify Item</a></li>';
-  echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
+  echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
+  echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link active">Lost Items</a></li>';
   echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
 
   echo '</ul>';
@@ -109,7 +109,7 @@
             echo    '<td>Resolved</td>';
             break;
         }
-        
+
         echo    '<td>
                     <form action="lostitemsinfo.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
                       <input type=\'hidden\' name="lostId" value="'.$row['lost_id'].'"/>

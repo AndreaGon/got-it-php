@@ -84,11 +84,11 @@ else{
     echo '</div>';
     echo '<nav class="col-md-6 col-12 tm-nav">';
     echo '<ul class="tm-nav-ul">';
-    echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
+    echo '<li class="tm-nav-li"><a href="index.php" class="custom-link">Home</a></li>';
     echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
     echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
     if(!isset($_SESSION['userID'])){
-        echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
+        echo '<li class="tm-nav-li"><a href="login.php" class="custom-link active">Login/Register</a></li>';
     }
     else{
       echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';

@@ -67,9 +67,9 @@
   echo '</div>';
   echo '<nav class="col-md-6 col-12 tm-nav">';
   echo '<ul class="tm-nav-ul">';
-  echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link active">Verify Item</a></li>';
+  echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
   echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
-  echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
+  echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link active">Found Items</a></li>';
 
   echo '</ul>';
   echo '</nav>';
