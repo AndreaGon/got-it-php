@@ -206,7 +206,11 @@ if (mysqli_num_rows($result_foundItems) > 0) {
         echo "</form>";
       }
       echo '</article>';
+<<<<<<< HEAD
     }
+=======
+    }
+>>>>>>> 2779e8f3a428c36d80854a7ea4b4fec6c3d117c5
     }
 }
 echo '</div>';
