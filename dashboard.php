@@ -50,7 +50,7 @@ echo '';
 echo '-->';
 echo '<body>';
 echo '';
-echo '<div class="container">';
+echo '<div class="container" style="overflow: hidden">';
 echo '<!-- Top box -->';
 echo '<!-- Logo & Site Name -->';
 echo '<div class="custom-placeholder">';
@@ -80,7 +80,7 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '';
-echo '<main>';
+echo '<main style="height: 1000px">';
 $id = $_SESSION['userID'];
 $sql_userInfo = "SELECT * FROM users
                  WHERE ID = $id";
@@ -146,7 +146,14 @@ if (mysqli_num_rows($result_lostItems) > 0) {
     }
     echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
     if ($row['status'] == 1){
-        echo "<a class='custom-link button'  style='margin-top:30px;margin-left:10px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
+        echo "<a class='custom-link button'  style='margin-top:30px;margin-left:0px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
+    }
+    if ($row['status'] != 3){
+      echo "<form action=\"dashboard.php\" method=\"POST\">";
+      echo "<input type=\"hidden\" name=\"foundID\" value=\"$itemID\"/>";
+      echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+      echo "<input type=\"hidden\" name=\"submitted\" value=\"true\"/>";
+      echo "</form>";
     }
     echo '</article>';
     }
@@ -201,16 +208,12 @@ if (mysqli_num_rows($result_foundItems) > 0) {
       if ($row['status'] != 3){
         echo "<form action=\"dashboard.php\" method=\"POST\">";
         echo "<input type=\"hidden\" name=\"foundID\" value=\"$foundItemID\"/>";
-        echo "<input type=\"Submit\" style=\"width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+        echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
         echo "<input type=\"hidden\" name=\"submitted\" value=\"true\"/>";
         echo "</form>";
       }
       echo '</article>';
-<<<<<<< HEAD
     }
-=======
-    }
->>>>>>> 2779e8f3a428c36d80854a7ea4b4fec6c3d117c5
     }
 }
 echo '</div>';
@@ -221,9 +224,7 @@ echo '</div>';
 echo '</main>';
 echo '';
 echo '<footer class="tm-footer text-center">';
-echo '<p>Copyright &copy; 2020 Simple House';
 echo '';
-echo '| Design: <a rel="nofollow" href="https://templatemo.com">TemplateMo</a></p>';
 echo '</footer>';
 echo '</div>';
 echo '<script src="js/jquery.min.js"></script>';
