@@ -48,6 +48,7 @@ h4{
   width: 300px;
   margin: 10px;
   padding:15px;
+  overflow-y: hidden;
 }
 
 .custom-center{

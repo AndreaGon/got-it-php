@@ -24,8 +24,16 @@ $STUATUS_CLAIMED = "CLAIMED";
 if(isset($_POST['submitted'])){
   $action = $_POST['submit'];
   $foundID = $_POST['foundID'];
-  $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
-            header("Refresh:0");
+  if(isset($foundID)){
+    $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
+              header("Refresh:0");
+  }
+  else{
+    $itemID = $_POST['itemID'];
+    $update = "UPDATE lost_items SET status = 3 WHERE id = '$itemID'";
+              header("Refresh:0");
+  }
+
   $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
 }
 
@@ -110,7 +118,7 @@ echo '<div class="custom-item-profile">';
 echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
 
 $sql_lostItems = "SELECT * FROM lost_items
-                 WHERE userID = $id";
+                 WHERE userID = $id AND status != 3";
 $retval_lostItems = mysqli_query($conn, $sql_lostItems);
 
 if(!$retval_lostItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
@@ -118,7 +126,7 @@ if(!$retval_lostItems){echo '<p class=\"itemInfo\"><b>Error displaying item data
 $result_lostItems = mysqli_query($conn, $sql_lostItems) or die(mysqli_error($conn));
 
 echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
-echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
+echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
 if (mysqli_num_rows($result_lostItems) > 0) {
   while($row = mysqli_fetch_assoc($result_lostItems)){
     $itemID = $row['ID'];
@@ -150,8 +158,14 @@ if (mysqli_num_rows($result_lostItems) > 0) {
     }
     if ($row['status'] != 3){
       echo "<form action=\"dashboard.php\" method=\"POST\">";
-      echo "<input type=\"hidden\" name=\"foundID\" value=\"$itemID\"/>";
-      echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+      echo "<input type=\"hidden\" name=\"itemID\" value=\"$itemID\"/>";
+      if ($row['status'] == 1){
+        echo "<input type=\"Submit\" style=\"margin-top:10px;width:100px; float:left;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+      }
+      else{
+        echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
+      }
+
       echo "<input type=\"hidden\" name=\"submitted\" value=\"true\"/>";
       echo "</form>";
     }
@@ -160,13 +174,11 @@ if (mysqli_num_rows($result_lostItems) > 0) {
 }
 echo '</div>';
 echo '</div>';
-
-
-echo '<div class="custom-item-profile">';
-echo '<div style="float:left; margin-top:-120px;" class="custom-div-section extra-margin-left">';
-
-echo '<div class="custom-item-profile">';
 echo '</div>';
+
+echo '<div class="custom-item-profile">';
+echo '<div style="float:left; margin-top:auto;" class="custom-div-section extra-margin-left">';
+
 
 $sql_foundItems = "SELECT * FROM found_items
                  WHERE userID = $id";
@@ -177,7 +189,7 @@ if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item dat
 $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
 
 echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Found Items</b></h2>";
-echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" style="margin-left: 150px;">';
+echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" >';
 if (mysqli_num_rows($result_foundItems) > 0) {
   while($row = mysqli_fetch_assoc($result_foundItems)){
     if ($row['status']!=3){

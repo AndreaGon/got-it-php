@@ -30,7 +30,7 @@ echo '';
 echo '-->';
 echo '<body>';
 echo '';
-echo '<div class="container">';
+echo '<div class="container" style="overflow: hidden">';
 echo '<!-- Top box -->';
 echo '<!-- Logo & Site Name -->';
 echo '<div class="custom-placeholder">';
@@ -95,6 +95,7 @@ $count_status2 = $result_totalRows_status2->num_rows;
 if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)) {
     while($row = mysqli_fetch_assoc($result)){
         if ($row['status']== 0 || $row['status'] == 1){
+          if ($row['status'] != 3){
             $itemID = $row['ID'];
             $image = $row["image"];
 
@@ -109,6 +110,8 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
             echo "<p class=\"tm-gallery-description\">{$row['description']}</p>";
             echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
             echo '</article>';
+          }
+
         }
     }
 }
