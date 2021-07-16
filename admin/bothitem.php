@@ -51,6 +51,7 @@ echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link active">Verify Item</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
 echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
+echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
 echo '</ul>';
 echo '</nav>';
@@ -70,9 +71,9 @@ echo "    margin-left: 83px";
 echo "}";
 echo "</style>";
 
-if (isset($_POST['lostId']) && isset($_POST['foundId'])) {
-    $lostID = $_POST['lostId'];
-    $foundID = $_POST['foundId'];
+if (isset($_POST['lostID']) && isset($_POST['foundID'])) {
+    $lostID = $_POST['lostID'];
+    $foundID = $_POST['foundID'];
 }
 else{
     echo "<p class=\"itemInfo\"><b>Unable to get parameter!</b></p>";
@@ -111,7 +112,7 @@ if (mysqli_num_rows($result_itemInfo) > 0) {
 
 
       $sql_contact = "SELECT * FROM users
-                      WHERE ID = '$userID'";
+                      WHERE ID = $userID";
       $retval_contact = mysqli_query($conn, $sql_contact);
       if(!$retval_contact){
           echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";

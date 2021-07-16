@@ -22,14 +22,19 @@
 
   if(isset($_POST['submitted'])){
     $matchId = (isset($_POST['matchedId']) ? $_POST['matchedId'] : '');
+    $lostId = (isset($_POST['lostID']) ? $_POST['lostID'] : '');
     $action = $_POST['submit'];
     switch($action){
       case "Approve": $update = "UPDATE matched_items SET status = 1 WHERE id = " . $matchId;
+                      $update2 = "UPDATE lost_items SET status = 2 WHERE id = " . $lostId;
                       $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+                      $isUpdateSuccess2 = mysqli_query($conn, $update2) or die(mysqli_error($conn));
                       header("Refresh:0");
                       break;
       case "Deny":    $update = "UPDATE matched_items SET status = 2 WHERE id = " . $matchId;
+                      $update2 = "UPDATE lost_items SET status = 0 WHERE id = " . $lostId;
                       $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+                      $isUpdateSuccess2 = mysqli_query($conn, $update2) or die(mysqli_error($conn));
                       header("Refresh:0");
                       break;
       case "Start Automatic Match":
@@ -88,6 +93,7 @@
   echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link active">Verify Item</a></li>';
   echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
   echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
+  echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
   echo '</ul>';
   echo '</nav>';
@@ -119,12 +125,13 @@
         echo    '<td>'.$row['found_name'].'</td>';
         echo    '<td>
                     <form action="bothitem.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
-                      <input type=\'hidden\' name="lostId" value="'.$row['lost_id'].'"/>
-                      <input type=\'hidden\' name="foundId" value="'.$row['found_id'].'"/>
+                      <input type=\'hidden\' name="lostID" value="'.$row['lost_id'].'"/>
+                      <input type=\'hidden\' name="foundID" value="'.$row['found_id'].'"/>
                       <input type="Submit" style="width:100px;" class="custom-button" name="submit" value="Info"/>
                     </form>
                     <form action="admin.php" method="POST">
                       <input type=\'hidden\' name="matchedId" value="'.$row['matched_id'].'"/>
+                      <input type=\'hidden\' name="lostID" value="'.$row['lost_id'].'"/>
                       <input type="Submit" style="width:100px;" class="custom-button" name="submit" value="Approve"/>
                       <input type="Submit" style="width:100px;" class="custom-button" name="submit" value="Deny"/>
                       <input type=\'hidden\' name=\'submitted\' value=\'true\'/>

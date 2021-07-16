@@ -18,7 +18,7 @@ $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
 $STATUS_PENDING = "PENDING MATCH";
 $STATUS_MATCHED = "ITEM MATCHED";
 $STATUS_FOUND = "FOUND";
-$STUATUS_CLAIMED = "CLAIMED";
+$STATUS_APPROVED = "APPROVED BY ADMIN";
 
 
 if(isset($_POST['submitted'])){
@@ -132,7 +132,7 @@ if (mysqli_num_rows($result_lostItems) > 0) {
     $itemID = $row['ID'];
     $image = $row["image"];
 
-    echo '<article class="custom-item-container" style="overflow-x: hidden;">';
+    echo '<article class="custom-item-container" style="overflow-x: hidden; height:auto;">';
     if($image != null){
         echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
     }
@@ -149,17 +149,17 @@ if (mysqli_num_rows($result_lostItems) > 0) {
         echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
         break;
       case 2:
-        echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_FOUND}</p>";
+        echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_APPROVED}</p>";
         break;
     }
     echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
-    if ($row['status'] == 1){
+    if ($row['status'] == 2){
         echo "<a class='custom-link button'  style='margin-top:30px;margin-left:0px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
     }
     if ($row['status'] != 3){
       echo "<form action=\"dashboard.php\" method=\"POST\">";
       echo "<input type=\"hidden\" name=\"itemID\" value=\"$itemID\"/>";
-      if ($row['status'] == 1){
+      if ($row['status'] == 1 || $row['status'] == 2){
         echo "<input type=\"Submit\" style=\"margin-top:10px;width:100px; float:left;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
       }
       else{
@@ -196,7 +196,7 @@ if (mysqli_num_rows($result_foundItems) > 0) {
       $foundItemID = $row['ID'];
       $image = $row["image"];
 
-      echo '<article class="custom-item-container" style="overflow-x: hidden;">';
+      echo '<article class="custom-item-container" style="overflow-x: hidden; height:auto;">';
       if($image != null){
           echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
       }
@@ -213,10 +213,10 @@ if (mysqli_num_rows($result_foundItems) > 0) {
           echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_MATCHED}</p>";
           break;
         case 2:
-          echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_CLAIMED}</p>";
+          echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_APPROVED}</p>";
           break;
       }
-      echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$foundItemID\">See item</a>";
+      echo "<a class='custom-link button'  style='margin-top:30px;' href=\"founditem.php?itemInfoID=$foundItemID\">See item</a>";
       if ($row['status'] != 3){
         echo "<form action=\"dashboard.php\" method=\"POST\">";
         echo "<input type=\"hidden\" name=\"foundID\" value=\"$foundItemID\"/>";

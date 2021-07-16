@@ -32,8 +32,14 @@ if(isset($_POST['submitted'])){
             $_SESSION['userID'] = $row['ID'];
             $_SESSION['loggedin'] = true;
 
-            //redirecting user to home page
-            header("location: index.php");
+            if($row['ID'] == 8){
+              header("location: admin/admin.php");
+            }else{
+              //redirecting user to home page
+              header("location: index.php");
+
+            }
+
         }
     }
     else{

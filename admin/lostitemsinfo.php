@@ -46,6 +46,7 @@ echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link active">Lost Items</a></li>';
 echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
+echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 echo '</ul>';
 echo '</nav>';
 echo '</div>';

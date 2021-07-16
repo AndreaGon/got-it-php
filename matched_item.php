@@ -140,9 +140,6 @@ if (mysqli_num_rows($result_matchedItems) > 0) {
 
         }
 
-        echo '<form action="matched_item.php?lostID="'.$lostID.' method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
-              <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Mark as Resolved"/>
-            </form>';
         echo '</div>';
         echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
         if($image != null){

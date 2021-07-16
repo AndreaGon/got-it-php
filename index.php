@@ -99,7 +99,7 @@ if (mysqli_num_rows($result) > 0 && (mysqli_num_rows($result) != $count_status2)
             $itemID = $row['ID'];
             $image = $row["image"];
 
-            echo '<article class="custom-item-container">';
+            echo '<article class="custom-item-container" style="height:auto;">';
             if($image != null){
                 echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
             }

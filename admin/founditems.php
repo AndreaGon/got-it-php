@@ -28,7 +28,8 @@
 
   $STATUS_PENDING = 0;
   $STATUS_MATCHED = 1;
-  $STATUS_FOUND = 2;
+  $STATUS_APPROVED = 2;
+  $STATUS_RESOLVED = 3;
 
   echo '<!DOCTYPE html>';
   echo '<html>';
@@ -70,6 +71,7 @@
   echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
   echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
   echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link active">Found Items</a></li>';
+  echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
   echo '</ul>';
   echo '</nav>';
@@ -98,8 +100,21 @@
         echo    '<td>'.$row['found_id'].'</td>';
         echo    '<td>'.$row['found_name'].'</td>';
         echo    '<td>'.$row['email'].'</td>';
-        echo    '<td>'.$row['status'].'</td>';
-        echo    '<td>
+        switch($row['status']){
+          case $STATUS_PENDING:
+            echo    '<td>Pending</td>';
+            break;
+          case $STATUS_MATCHED:
+            echo    '<td>Matched</td>';
+            break;
+          case $STATUS_APPROVED:
+            echo    '<td>Approved</td>';
+            break;
+          case $STATUS_RESOLVED:
+            echo    '<td>Resolved</td>';
+            break;
+        }
+        echo    '<td style="width:300px;">
                     <form action="founditemsinfo.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
                       <input type=\'hidden\' name="foundId" value="'.$row['found_id'].'"/>
                       <input type="Submit" class="custom-button" style="width:100px;" name="submit" value="Info"/>
