@@ -81,7 +81,7 @@
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link active">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     if($_SESSION['role'] == "superadmin"){
-      echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
+      echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 

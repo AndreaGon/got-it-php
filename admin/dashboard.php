@@ -102,7 +102,7 @@
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     if($_SESSION['role'] == "superadmin"){
-      echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
+      echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
@@ -125,6 +125,8 @@
             <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
             <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Start Automatic Match"/>
           </form>';
+      echo '<br/>';
+      echo '<br/>';
       echo '<tr>';
       echo '<th>ITEM LOST</th>';
       echo '<th>ITEM CLAIMED</th>';

@@ -33,7 +33,7 @@ if(isset($_POST['submitted'])){
             $_SESSION['role'] =  $row['role'];
             $_SESSION['loggedin'] = true;
 
-            if($row['role'] == "admin"){
+            if($row['role'] == "admin" || $row['role'] == "superadmin"){
               header("location: admin/dashboard.php");
             }else{
               //redirecting user to home page
