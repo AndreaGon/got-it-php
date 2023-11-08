@@ -30,10 +30,11 @@ if(isset($_POST['submitted'])){
             //telling the system that the user is entitled to be logged in
             session_start(); //start the session
             $_SESSION['userID'] = $row['ID'];
+            $_SESSION['role'] =  $row['role'];
             $_SESSION['loggedin'] = true;
 
-            if($row['ID'] == 8){
-              header("location: admin/admin.php");
+            if($row['role'] == "admin"){
+              header("location: admin/dashboard.php");
             }else{
               //redirecting user to home page
               header("location: index.php");

@@ -82,6 +82,7 @@ if(isset($_POST['submitted'])){
     $password = $_POST['password'];
     $contact_number = $_POST['number'];
     $address = $_POST['address'];
+    $role = 'user';
 
     //checking if user already exists
     $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
@@ -93,8 +94,8 @@ if(isset($_POST['submitted'])){
     }
     else{
         //if user does not exist in database
-        $query = "INSERT INTO users (username, email, password, contact_no, address)
-                  VALUES " . "('" .$name. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$address. "')";
+        $query = "INSERT INTO users (username, email, password, contact_no, address, role)
+                  VALUES " . "('" .$name. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$address. "','" .$role. "')";
 
         $conn->query($query);
         echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"green\">Successfully registered.</font></span>";
