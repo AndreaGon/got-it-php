@@ -74,43 +74,87 @@
     echo '</div>';
     echo '';
 
-    echo '<main>';
-    echo '<header class="row tm-welcome-section">';
-    echo '<h2 class="col-12 text-center tm-section-title">Manage Users</h2>';
-    echo '</header>';
-    echo '';
-    echo '<div class="custom-center" style="width: 100%">';
-    echo '<table class="custom-table" border="1" style="display:center;" width=1000 height=100>';
-    echo '<tr>';
-    echo '<th>ID</th>';
-    echo '<th>USERNAME</th>';
-    echo '<th>EMAIL</th>';
-    echo '<th>STATUS</th>';
-    echo '<th>ACTION</th>';
-    echo '</tr>';
+    // Handle user activation/deactivation using prepared statements
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
+            $userID = $_POST['userID'];
+            $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo '<tr>';
-        echo '<td>' . $row['ID'] . '</td>';
-        echo '<td>' . $row['username'] . '</td>';
-        echo '<td>' . $row['email'] . '</td>';
-        echo '<td>' . ($row['status'] == 1 ? 'Active' : 'Inactive') . '</td>';
-        echo '<td>';
-        // Allow user management actions only for non-admin and non-superadmin roles
-        if ($row['role'] !== 'admin' && $row['role'] !== 'superadmin') {
-            echo '<form action="manageusers.php" method="POST">';
-            echo '<input type="hidden" name="userID" value="' . $row['ID'] . '"/>';
-            echo '<button type="submit" class="custom-button" name="activate">Activate</button>';
-            echo '<button type="submit" class="custom-button" name="deactivate">Deactivate</button>';
+            // Allow admin activation/deactivation only for non-admin and non-superadmin roles
+            $userQuery = "SELECT * FROM users WHERE ID = $userID AND role NOT IN ('admin', 'superadmin')";
+            $userResult = mysqli_query($conn, $userQuery);
+
+            if ($userResult && mysqli_num_rows($userResult) > 0) {
+                $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
+                $stmt = mysqli_prepare($conn, $updateStatusQuery);
+                mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
+
+                $status = ($action == 'Activate') ? 1 : 0;
+                mysqli_stmt_execute($stmt);
+
+                mysqli_stmt_close($stmt);
+
+                $_SESSION['success_message'] = 'Action completed successfully!';
+                header("Location: manageusers.php?status=success"); // Redirect to the same page to avoid resubmission
+                exit();
+            } else {
+                // Handle invalid user or display an error message
+                echo "Invalid user or unauthorized action.";
+            }
+        }
+    }
+
+    echo '<main>';
+        echo '<header class="row tm-welcome-section">';
+        echo '<h2 class="col-12 text-center tm-section-title">Manage Users</h2>';
+        echo '</header>';
+        echo '';
+        echo '<div class="custom-center" style="width: 100%">';
+
+        // Show success message if set in the URL parameters
+        if (isset($_GET['status']) && $_GET['status'] === 'success' && isset($_SESSION['success_message'])) {
+            echo '<div class="success-message">' . $_SESSION['success_message'] . '</div>';
+            // Clear the success message after displaying it
+            unset($_SESSION['success_message']);
+        }
+
+        echo '<table class="custom-table" border="1" style="display:center;" width=1000 height=100>';
+        echo '<tr style="height: 70px;">';
+        echo '<th>ID</th>';
+        echo '<th>USERNAME</th>';
+        echo '<th>EMAIL</th>';
+        echo '<th>STATUS</th>';
+        echo '<th>ACTION</th>';
+        echo '</tr>';
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<tr style="height: 50px;">';
+            echo '<td style="text-align: center;">' . $row['ID'] . '</td>';
+            echo '<td style="text-align: center;">' . $row['username'] . '</td>';
+            echo '<td style="text-align: center;">' . $row['email'] . '</td>';
+            echo '<td style="text-align: center;">' . ($row['status'] == 1 ? 'Active' : 'Inactive') . '</td>';
+            echo '<td style="text-align: center;">';
+            // Allow user management actions only for non-admin and non-superadmin roles
+            if ($row['role'] !== 'admin' && $row['role'] !== 'superadmin') {
+                echo '<form action="manageusers.php" method="POST">';
+                echo '<input type="hidden" name="userID" value="' . $row['ID'] . '"/>';
+
+                // Check if the user is active, if so, hide the activate button
+                if ($row['status'] == 1) {
+                    echo '<button type="submit" class="custom-button" name="deactivate">Deactivate</button>';
+                } else {
+                    // Check if the user is inactive, if so, hide the deactivate button
+                    echo '<button type="submit" class="custom-button" name="activate">Activate</button>';
+                }
+
             echo '</form>';
         }
         echo '</td>';
         echo '</tr>';
-    }
-
-    echo '</table>';
-    echo '</div>';
-    echo '';
+        }
+        echo '</table>';
+        echo '</div>';
+        echo '';
     echo '</main>';
 
     // Handle user activation/deactivation using prepared statements
