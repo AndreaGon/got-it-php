@@ -59,6 +59,7 @@ else{
         echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
+
     echo '</ul>';
     echo '</nav>';
     echo '</div>';
