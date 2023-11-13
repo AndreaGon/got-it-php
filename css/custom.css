@@ -115,3 +115,11 @@ h4{
 .custom-div-height{
   height:1500px;
 }
+
+.success-message {
+  background-color: green;
+  color: white;
+  padding: 15px;
+  margin-top: 10px;
+  width: 1000px;
+}
