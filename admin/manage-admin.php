@@ -87,7 +87,6 @@
     echo '</div>';
     echo '</div>';
     echo '</div>';
-    echo '';
 
     echo '<main>';
     echo '<header class="row tm-welcome-section">';
@@ -97,10 +96,12 @@
     echo '<div class="custom-center" style="width: 100%">';
 
     echo '<table class = "custom-table" border="1" style="display:center;" width=1000 height=80>';
-    echo '<form action="admin.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
-        <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
-        <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Register admin"/>
-        </form>';
+    // echo '<form action="admin.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
+    //     <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
+    //     <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Register admin"/>
+    //     </form>';
+
+    echo '<a class="custom-button" style="text-decoration: none" href="add-admin.php">Manage Admins</a>';
     echo '<br/>';
     echo '<br/>';
     echo '<tr>';
