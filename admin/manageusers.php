@@ -44,10 +44,10 @@
 
     echo '<nav class="col-md-6 col-12 tm-nav">';
     echo '<ul class="tm-nav-ul">';
-    echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link active">Verify Item</a></li>';
+    echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
-    echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
+    echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link active">Manage Users</a></li>';
     if($_SESSION['role'] == "superadmin"){
         echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
     }
@@ -85,8 +85,8 @@
         if ($row['role'] !== 'admin' && $row['role'] !== 'superadmin') {
             echo '<form action="manageusers.php" method="POST">';
             echo '<input type="hidden" name="userID" value="' . $row['ID'] . '"/>';
-            echo '<input type="Submit" class="custom-button" name="activate" value="Activate"/>';
-            echo '<input type="Submit" class="custom-button" name="deactivate" value="Deactivate"/>';
+            echo '<button type="submit" class="custom-button" name="activate">Activate</button>';
+            echo '<button type="submit" class="custom-button" name="deactivate">Deactivate</button>';
             echo '</form>';
         }
         echo '</td>';
@@ -96,29 +96,31 @@
     echo '</table>';
 
     // Handle user activation/deactivation using prepared statements
-    if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
-        // Additional checks can be added here if needed
-        $userID = $_POST['userID'];
-        $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
+            // Additional checks can be added here if needed
+            $userID = $_POST['userID'];
+            $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
 
-        // Allow user activation/deactivation only for non-admin and non-superadmin roles
-        $userQuery = "SELECT * FROM users WHERE ID = $userID AND role NOT IN ('admin', 'superadmin')";
-        $userResult = mysqli_query($conn, $userQuery);
+            // Allow user activation/deactivation only for non-admin and non-superadmin roles
+            $userQuery = "SELECT * FROM users WHERE ID = $userID AND role NOT IN ('admin', 'superadmin')";
+            $userResult = mysqli_query($conn, $userQuery);
 
-        if ($userResult && mysqli_num_rows($userResult) > 0) {
-            $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
-            $stmt = mysqli_prepare($conn, $updateStatusQuery);
-            mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
+            if ($userResult && mysqli_num_rows($userResult) > 0) {
+                $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
+                $stmt = mysqli_prepare($conn, $updateStatusQuery);
+                mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
 
-            $status = ($action == 'Activate') ? 1 : 0;
-            mysqli_stmt_execute($stmt);
+                $status = ($action == 'Activate') ? 1 : 0;
+                mysqli_stmt_execute($stmt);
 
-            mysqli_stmt_close($stmt);
+                mysqli_stmt_close($stmt);
 
-            header("Refresh:0");
-        } else {
-            // Handle invalid user or display an error message
-            echo "Invalid user or unauthorized action.";
+                header("Refresh:0");
+            } else {
+                // Handle invalid user or display an error message
+                echo "Invalid user or unauthorized action.";
+            }
         }
     }
 
