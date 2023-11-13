@@ -32,34 +32,27 @@
   $STATUS_APPROVED = 2;
   $STATUS_RESOLVED = 3;
 
-  if($_SESSION["role"] == 'user'){
-    echo '<script>
-    alert("Invalid access!");
-    window.location.href="../index.php";
-    </script>'; 
-  }
-  else{
-    echo '<!DOCTYPE html>';
-    echo '<html>';
-    echo '';
-    echo '<head>';
-    echo '<meta charset="UTF-8" />';
-    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
-    echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-    echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />';
-    echo '<link href="../css/all.min.css" rel="stylesheet" />';
-    echo '<link href="../css/templatemo-style.css" rel="stylesheet" />';
-    echo '<link href="../css/custom.css" media="all" rel="stylesheet" />';
-    echo '</head>';
-    echo '<!--';
-    echo '';
-    echo 'Simple House';
-    echo '';
-    echo 'https://templatemo.com/tm-539-simple-house';
-    echo '';
-    echo '-->';
-    echo '<body>';
-    echo '';
+  echo '<!DOCTYPE html>';
+  echo '<html>';
+  echo '';
+  echo '<head>';
+  echo '<meta charset="UTF-8" />';
+  echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
+  echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
+  echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />';
+  echo '<link href="../css/all.min.css" rel="stylesheet" />';
+  echo '<link href="../css/templatemo-style.css" rel="stylesheet" />';
+  echo '<link href="../css/custom.css" media="all" rel="stylesheet" />';
+  echo '</head>';
+  echo '<!--';
+  echo '';
+  echo 'Simple House';
+  echo '';
+  echo 'https://templatemo.com/tm-539-simple-house';
+  echo '';
+  echo '-->';
+  echo '<body>';
+  echo '';
 
     //header + navigation bar
     echo '<div class="container">';
@@ -79,6 +72,8 @@
     echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Verify Item</a></li>';
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link active">Found Items</a></li>';
+    echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
+    
     if($_SESSION['role'] == "superadmin"){
       echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }

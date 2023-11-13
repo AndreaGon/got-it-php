@@ -62,7 +62,8 @@ else{
     if($_SESSION['role'] == "superadmin"){
         echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
-    echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
+    echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
+echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
     echo '</ul>';
     echo '</nav>';
