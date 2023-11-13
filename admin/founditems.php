@@ -107,11 +107,12 @@
       echo '<th>STATUS</th>';
       echo '<th>ACTION</th>';
       echo '</tr>';
+
       while($row = $result->fetch_assoc()){
           echo '<tr>';
-          echo    '<td>'.$row['found_id'].'</td>';
-          echo    '<td>'.$row['found_name'].'</td>';
-          echo    '<td>'.$row['email'].'</td>';
+          echo '<td>'.$row['found_id'].'</td>';
+          echo '<td>'.$row['found_name'].'</td>';
+          echo '<td>'.$row['email'].'</td>';
           switch($row['status']){
             case $STATUS_PENDING:
               echo    '<td>Pending</td>';
@@ -144,7 +145,6 @@
       echo '</div>';
       echo '';
       echo '</main>';
-
 
     //footer
     echo '<footer class="tm-footer text-center">';

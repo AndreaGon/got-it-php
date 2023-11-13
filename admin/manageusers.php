@@ -16,6 +16,10 @@
 
     $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
+    // Fetch and display users from the database
+    $query = "SELECT * FROM users";
+    $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
+
     echo '<!DOCTYPE html>';
     echo '<html>';
     echo '';
@@ -23,33 +27,42 @@
     echo '<meta charset="UTF-8" />';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
     echo '<meta http-equiv="X-UA-Compatible" content="ie=edge" />';
-    echo '<title>Got It - Manage Users - Admin</title>';
-    echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:400" rel="stylesheet" />';
-    echo '<link href="../css/templatemo-style.css" media="all" rel="stylesheet" />';
-    echo '<link href="../css/custom.css?v=' . time() . '" media="all" rel="stylesheet" />';
+    echo '<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />';
+    echo '<link href="../css/all.min.css" rel="stylesheet" />';
+    echo '<link href="../css/templatemo-style.css" rel="stylesheet" />';
+    echo '<link href="../css/custom.css" media="all" rel="stylesheet" />';
     echo '</head>';
-
+    echo '<!--';
+    echo '';
+    echo 'Simple House';
+    echo '';
+    echo 'https://templatemo.com/tm-539-simple-house';
+    echo '';
+    echo '-->';
     echo '<body>';
-    echo '<div class="container custom-div-height">';
+    echo '';
+
+    //header + navigation bar
+    echo '<div class="container">';
+    echo '<!-- Top box -->';
+    echo '<!-- Logo & Site Name -->';
     echo '<div class="custom-placeholder">';
     echo '<div class="parallax-window">';
     echo '<div class="tm-header">';
     echo '<div class="row tm-header-inner">';
     echo '<div class="col-md-6 col-12">';
-
     echo '<div class="tm-site-text-box">';
-    echo '<img class="tm-site-logo" width="150" src="../img/logo.png"/>';
+    echo '<img class="tm-site-logo" width="150" src = "../img/logo.png"/>';
     echo '</div>';
     echo '</div>';
-
     echo '<nav class="col-md-6 col-12 tm-nav">';
     echo '<ul class="tm-nav-ul">';
-    echo '<li class="tm-nav-li"><a href="admin.php" class="custom-link">Verify Item</a></li>';
+    echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Verify Item</a></li>';
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link active">Manage Users</a></li>';
     if($_SESSION['role'] == "superadmin"){
-        echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
+      echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
 
@@ -59,25 +72,27 @@
     echo '</div>';
     echo '</div>';
     echo '</div>';
+    echo '';
+
     echo '<main>';
-
-    echo '<h1 align="left" style="margin-bottom:10px"><b>Manage Users</b></h1>';
-
-    // Fetch and display users from the database
-    $query = "SELECT * FROM users";
-    $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-
-    echo '<table class="custom-table" border="1" width="1000" height="80">';
+    echo '<header class="row tm-welcome-section">';
+    echo '<h2 class="col-12 text-center tm-section-title">Manage Users</h2>';
+    echo '</header>';
+    echo '';
+    echo '<div class="custom-center" style="width: 100%">';
+    echo '<table class="custom-table" border="1" style="display:center;" width=1000 height=100>';
     echo '<tr>';
-    echo '<th>User ID</th>';
-    echo '<th>Email</th>';
-    echo '<th>Status</th>';
-    echo '<th>Action</th>';
+    echo '<th>ID</th>';
+    echo '<th>USERNAME</th>';
+    echo '<th>EMAIL</th>';
+    echo '<th>STATUS</th>';
+    echo '<th>ACTION</th>';
     echo '</tr>';
 
     while ($row = mysqli_fetch_assoc($result)) {
         echo '<tr>';
         echo '<td>' . $row['ID'] . '</td>';
+        echo '<td>' . $row['username'] . '</td>';
         echo '<td>' . $row['email'] . '</td>';
         echo '<td>' . ($row['status'] == 1 ? 'Active' : 'Inactive') . '</td>';
         echo '<td>';
@@ -94,6 +109,9 @@
     }
 
     echo '</table>';
+    echo '</div>';
+    echo '';
+    echo '</main>';
 
     // Handle user activation/deactivation using prepared statements
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -124,14 +142,18 @@
         }
     }
 
+    //footer
+    echo '<footer class="tm-footer text-center">';
+    echo '<p>Copyright &copy; 2020 Simple House';
+    echo '';
+    echo '| Design: <a rel="nofollow" href="https://templatemo.com">TemplateMo</a></p>';
+    echo '</footer>';
     echo '</div>';
-    echo '</main>';
-    echo '<footer class="tm-footer text-center"></footer>';
-    echo '</div>';
-    echo '<script src="../js/jquery.min.js"></script>';
-    echo '<script src="../js/parallax.min.js"></script>';
+    echo '<script src="js/jquery.min.js"></script>';
+    echo '<script src="js/parallax.min.js"></script>';
     echo '</body>';
     echo '</html>';
+    echo '';
 
     mysqli_close($conn);
 ?>
