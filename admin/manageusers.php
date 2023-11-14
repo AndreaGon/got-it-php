@@ -122,7 +122,7 @@
         echo '<tr style="height: 70px;">';
         echo '<th>ID</th>';
         echo '<th>USERNAME</th>';
-        echo '<th>EMAIL</th>';
+        echo '<th>EMAIL ADDRESS</th>';
         echo '<th>STATUS</th>';
         echo '<th>ACTION</th>';
         echo '</tr>';
