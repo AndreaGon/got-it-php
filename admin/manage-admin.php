@@ -1,5 +1,11 @@
 <?php
+  session_set_cookie_params(0, '/', '', true, true);
   session_start();
+  
+  if(!isset($_SESSION['userID'])){
+    header("Location: ../login.php");
+  }
+
   $dbServername = "localhost";
   $dbUsername = "root";
   $dbPassword = "";
@@ -17,16 +23,12 @@
   $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
   if(isset($_POST['submitted'])){
-    $lostID = $_POST['lostId'];
+    $adminId = $_POST['adminId'];
     $isDelete = $_POST['submit'];
-    $delete = "DELETE FROM lost_items WHERE id = " . $lostID;
+    $delete = "DELETE FROM users WHERE id = " . $adminId;
     $isUpdateSuccess = mysqli_query($conn, $delete) or die(mysqli_error($conn));
+    header("Refresh:0");
   }
-
-  $STATUS_PENDING = 0;
-  $STATUS_MATCHED = 1;
-  $STATUS_APPROVED= 2;
-  $STATUS_RESOLVED= 3;
 
   
   if($_SESSION["role"] == 'user' || $_SESSION["role"] == 'admin'){
@@ -97,12 +99,8 @@
     echo '<div class="custom-center" style="width: 100%">';
 
     echo '<table class = "custom-table" border="1" style="display:center;" width=1000 height=80>';
-    // echo '<form action="admin.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
-    //     <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
-    //     <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Register admin"/>
-    //     </form>';
 
-    echo '<a class="custom-button" style="text-decoration: none" href="add-admin.php">Manage Admins</a>';
+    echo '<a class="custom-button" style="text-decoration: none" href="add-admin.php">Register admin</a>';
     echo '<br/>';
     echo '<br/>';
     echo '<tr>';
@@ -119,18 +117,17 @@
         echo    '<td>'.$row['admin_email'].'</td>';
         echo    '<td>'.$row['admin_role'].'</td>';
 
-        echo    '<td style="width:300px;">
-                    <form action="lostitemsinfo.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
-                    
-                    <input type="Submit" class="custom-button" style="width:100px;" name="submit" value="Info"/>
-                    </form>
-
-                    <form action="lostitems.php" method="POST">
-                    <input type=\'hidden\' name="adminId" value="'.$row['admin_id'].'"/>
-                    <input type="Submit" class="custom-button" style="width:100px;" name="submit" value="Delete"/>
-                    <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
-                    </form>
+        if($row["admin_id"] != $_SESSION['userID']){
+          echo    '<td style="width:300px;">
+                    <center>
+                      <form action="manage-admin.php" method="POST">
+                      <input type=\'hidden\' name="adminId" value="'.$row['admin_id'].'"/>
+                      <input type="Submit" class="custom-button" style="width:100px;" name="submit" value="Delete"/>
+                      <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
+                      </form>
+                    </center>
                 </td>';
+        }
         echo '</tr>';
     }
 
