@@ -1,4 +1,9 @@
 <?php
+
+require_once "config.php";
+
+
+
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 $dbServername = "localhost";
