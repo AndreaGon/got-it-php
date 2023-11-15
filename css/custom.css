@@ -121,5 +121,15 @@ h4{
   color: white;
   padding: 15px;
   margin-top: 10px;
+  margin-bottom: 20px;
+  width: 1000px;
+}
+
+.error-message {
+  background-color: rgb(223, 67, 67);
+  color: white;
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 20px;
   width: 1000px;
 }
