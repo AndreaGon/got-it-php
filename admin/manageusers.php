@@ -1,10 +1,6 @@
 <?php
     error_reporting(E_ALL);
     session_start();
-    
-    if(!isset($_SESSION['userID'])){
-        header("Location: ../login.php");
-    }
 
     $dbServername = "localhost";
     $dbUsername = "root";
