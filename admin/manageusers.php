@@ -2,15 +2,6 @@
     error_reporting(E_ALL);
     session_start();
 
-    // Check if the user is logged in and has the admin role
-    if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'admin') {
-        echo '<script>
-        alert("Invalid access!");
-        window.location.href="../index.php";
-        </script>'; 
-        exit();
-    }
-
     $dbServername = "localhost";
     $dbUsername = "root";
     $dbPassword = "";
