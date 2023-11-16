@@ -1,4 +1,7 @@
 <?php
+    require_once '../rbac.php';
+    $rbac = new RBAC();
+
     error_reporting(E_ALL);
     session_start();
     
@@ -15,11 +18,11 @@
     $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
     // Fetch and display users from the database
-    $query = "SELECT * FROM users";
+    $query = "SELECT * FROM users WHERE roleId=1";
     $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
     // Check if the user is logged in and has the admin role
-    if($_SESSION["role"] == 'user'){
+    if($rbac->getRoleNameFromId($_SESSION['role']) == 'user'){
         echo '<script>
         alert("Invalid access!");
         window.location.href="../logout.php";
@@ -69,7 +72,7 @@
         echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
         echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
         echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link active">Manage Users</a></li>';
-        if($_SESSION['role'] == "superadmin"){
+        if($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin"){
         echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
         }
         echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
@@ -143,7 +146,7 @@
                 echo '<td style="text-align: center;">' . ($row['status'] == 1 ? 'Active' : 'Inactive') . '</td>';
                 echo '<td style="text-align: center;">';
                 // Allow user management actions only for non-admin and non-superadmin roles
-                if ($row['role'] !== 'admin' && $row['role'] !== 'superadmin') {
+                if ($rbac->getRoleNameFromId($row['roleId']) !== 'admin' && $rbac->getRoleNameFromId($row['roleId']) !== 'superadmin') {
                     echo '<form action="manageusers.php" method="POST">';
                     echo '<input type="hidden" name="userID" value="' . $row['ID'] . '"/>';
 

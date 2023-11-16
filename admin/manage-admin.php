@@ -1,4 +1,7 @@
 <?php
+  require_once '../rbac.php';
+  $rbac = new RBAC();
+  
   session_set_cookie_params(0, '/', '', true, true);
   session_start();
   
@@ -16,9 +19,9 @@
   $query = "SELECT
   id AS admin_id,
   email AS admin_email,
-  role AS admin_role,
+  roleId AS admin_role,
   username AS admin_username
-  FROM users WHERE role = 'admin' OR role = 'superadmin'";
+  FROM users WHERE roleId = 2 OR roleId = 3";
 
   $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
@@ -31,7 +34,7 @@
   }
 
   
-  if($_SESSION["role"] == 'user' || $_SESSION["role"] == 'admin'){
+  if($rbac->getRoleNameFromId($_SESSION['role']) == 'user' || $rbac->getRoleNameFromId($_SESSION['role']) == 'admin'){
     echo '<script>
     alert("Invalid access!");
     window.location.href="../index.php";
@@ -79,7 +82,7 @@
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
-    if($_SESSION['role'] == "superadmin"){
+    if($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin"){
       echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
@@ -115,7 +118,7 @@
         echo    '<td>'.$row['admin_id'].'</td>';
         echo    '<td>'.$row['admin_username'].'</td>';
         echo    '<td>'.$row['admin_email'].'</td>';
-        echo    '<td>'.$row['admin_role'].'</td>';
+        echo    '<td>'.$rbac->getRoleNameFromId($row['admin_role']).'</td>';
 
         if($row["admin_id"] != $_SESSION['userID']){
           echo    '<td style="width:300px;">

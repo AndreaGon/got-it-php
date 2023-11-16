@@ -1,4 +1,7 @@
 <?php
+  require_once '../rbac.php';
+  $rbac = new RBAC();
+
   session_start();
   if(!isset($_SESSION['userID'])){
     header("Location: ../login.php");
@@ -58,7 +61,7 @@
 
   }
 
-  if($_SESSION["role"] == 'user'){
+  if($rbac->getRoleNameFromId($_SESSION['role']) == 'user'){
     echo '<script>
     alert("Invalid access!");
     window.location.href="../index.php";
@@ -106,7 +109,7 @@
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
-    if($_SESSION['role'] == "superadmin"){
+    if($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin"){
       echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';

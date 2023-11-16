@@ -1,4 +1,7 @@
 <?php
+  require_once '../rbac.php';
+  $rbac = new RBAC();
+
   error_reporting(E_ALL);  //give warning if session cannot start
   session_start(); //start the session
   if(!isset($_SESSION['userID'])){
@@ -15,14 +18,14 @@
   if(isset($_POST['submitted'])){
 
     $adminName = $_POST['adminName'];
-    $role = $_POST['role'];
+    $role_name = $_POST['role'];
     $contact_number = $_POST['contact'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
     if(
       $adminName == "" ||
-      $role == "" ||
+      $role_name == "" ||
       $contact_number == "" ||
       $email == "" ||
       $password == ""
@@ -40,8 +43,8 @@
       }
       else{
           //if user does not exist in database
-          $query = "INSERT INTO users (username, email, password, contact_no, role)
-          VALUES " . "('" .$adminName. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$role. "')";
+          $query = "INSERT INTO users (username, email, password, contact_no, roleId)
+          VALUES " . "('" .$adminName. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$rbac->getRoleIdFromName($role_name). "')";
 
 
           if ($conn->query($query) === TRUE) {
@@ -56,7 +59,7 @@
   }
 
   
-  if($_SESSION["role"] == 'user' || $_SESSION["role"] == 'admin'){
+  if($rbac->getRoleNameFromId($_SESSION['role']) == 'user' || $rbac->getRoleNameFromId($_SESSION['role']) == 'admin'){
     echo '<script>
     alert("Invalid access!");
     window.location.href="../index.php";
@@ -104,7 +107,7 @@
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link">Found Items</a></li>';
     echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
-    if($_SESSION['role'] == "superadmin"){
+    if($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin"){
       echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link active">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
