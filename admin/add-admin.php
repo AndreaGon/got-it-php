@@ -2,7 +2,7 @@
   error_reporting(E_ALL);  //give warning if session cannot start
   session_start(); //start the session
   if(!isset($_SESSION['userID'])){
-      header("Location:login.php");
+      header("Location: ../login.php");
   }
 
   $dbServername = "localhost";
@@ -13,7 +13,6 @@
 
   $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
   if(isset($_POST['submitted'])){
-    $isSuccess = false;
 
     $adminName = $_POST['adminName'];
     $role = $_POST['role'];
@@ -21,28 +20,39 @@
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
-    $result_register = mysqli_query($conn, $checking_user_existence) or die(mysqli_error($conn));
-
-    if(mysqli_num_rows($result_register) > 0){
-        echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"red\">Email has been used.</font></span>";
+    if(
+      $adminName == "" ||
+      $role == "" ||
+      $contact_number == "" ||
+      $email == "" ||
+      $password == ""
+    ){
+      $_SESSION['toast_message'] = 'Please fill in all details.';
+      $isSuccess = false;
     }
     else{
-        //if user does not exist in database
-        $query = "INSERT INTO users (username, email, password, contact_no, role)
-        VALUES " . "('" .$adminName. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$role. "')";
+      $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
+      $result_register = mysqli_query($conn, $checking_user_existence) or die(mysqli_error($conn));
+
+      if(mysqli_num_rows($result_register) > 0){
+        $_SESSION['toast_message'] = 'Email has been used.';
+        $isSuccess = false;
+      }
+      else{
+          //if user does not exist in database
+          $query = "INSERT INTO users (username, email, password, contact_no, role)
+          VALUES " . "('" .$adminName. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$role. "')";
 
 
-        if ($conn->query($query) === TRUE) {
-            $isSuccess = true;
-        }
-        echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"green\">Successfully registered.</font></span>";
+          if ($conn->query($query) === TRUE) {
+              $isSuccess = true;
+          }
+
+          $_SESSION['toast_message'] = 'Successfully registered admin';
+      }
+
+      $conn->close();
     }
-
-    $conn->close();
-
-
-
   }
 
   
@@ -112,16 +122,20 @@
     echo '</header>';
     echo '';
     echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
+    if (isset($_SESSION['toast_message'])) {
+      if($isSuccess){
+        echo '<div class="success-message" style="display: block; margin-left: 50px;">' . $_SESSION['toast_message'] . '</div>';
+      }
+      else{
+        echo '<div class="error-message" style="display: block; margin-left: 50px;">' . $_SESSION['toast_message'] . '</div>';
+      }
+      
+      // Clear the success message after displaying it
+      unset($_SESSION['toast_message']);
+    }
 
     echo '<form action="add-admin.php" method="POST" enctype="multipart/form-data">';
-    // if(isset($_POST['submitted'])){
-    //     if($isSuccess){
-    //     echo '<span style="display: block; backgorund-color: #9ffa91; padding: 20px;">Admin added successfully</span>';
-    //     }
-    //     else{
-    //     echo '<span>Item report failed</span>';
-    //     }
-    // }
+
     echo '<div style="float:left;" class="custom-div-section">';
     echo '<div class="custom-section">';
     echo '<h4>Name of Admin</h4>';
@@ -147,8 +161,7 @@
     echo '<div class="custom-section">';
     echo '<h4>Role</h4>';
     echo '<select name = "role" class="custom-select">';
-    echo '<option disabled selected>Select...</option>';
-    echo '<option value="admin">Admin</option>';
+    echo '<option value="admin" selected>Admin</option>';
     echo '<option value="superadmin">Superadmin</option>';
     echo '</select>';
     echo '</div>';

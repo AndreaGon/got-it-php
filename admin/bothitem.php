@@ -3,7 +3,7 @@ session_start();
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 if(!isset($_SESSION['userID'])){
-    echo'<p>Failed to run session!</p>';
+    header("Location: ../login.php");
 }
 
 $dbServername = "localhost";
