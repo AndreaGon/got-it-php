@@ -3,6 +3,7 @@ require_once 'rbac.php';
 $rbac = new RBAC();
 
 error_reporting(E_ALL);  //give warning if session cannot start
+ini_set('display_errors', 1);
 
 $dbServername = "localhost";
 $dbUsername = "root";
@@ -26,7 +27,6 @@ if(isset($_POST['submitted'])){
 
     //pulling a certain section of the database into the scope of the code
     $credentials = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
-    //$result_login = mysqli_query($conn, $credentials) or die(mysqli_error($conn));
     $result_login = $conn->query($credentials);
 
 
@@ -34,20 +34,23 @@ if(isset($_POST['submitted'])){
     if($conn->query($credentials) == true){
         while($row = mysqli_fetch_assoc($result_login)){
             //telling the system that the user is entitled to be logged in
-            session_start(); //start the session
 
-            $_SESSION['userID'] = $row['ID'];
-            $_SESSION['role'] =  $row['roleId'];
-            $_SESSION['loggedin'] = true;
+            if ($row['status'] == 1){
+                session_start(); //start the session
+                $_SESSION['userID'] = $row['ID'];
+                $_SESSION['role'] =  $row['role'];
+                $_SESSION['loggedin'] = true;
 
-
-
-            if($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
-              header("location: admin/dashboard.php");
-            }else{
-              //redirecting user to home page
-              header("location: index.php");
-
+                if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
+                    header("location: admin/dashboard.php");
+                } else {
+                    //redirecting user to home page
+                    header("location: index.php");
+                    exit;
+                }
+            } else {
+                // User is inactive, show error message
+                $credential_error = "Your account is inactive.";
             }
 
         }
@@ -57,9 +60,7 @@ if(isset($_POST['submitted'])){
         $credential_error = "Email and password are incorrect";
     }
 
-
     $conn->close();
-
 
 }
 else{
