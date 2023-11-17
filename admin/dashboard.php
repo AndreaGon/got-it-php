@@ -61,11 +61,12 @@
 
   }
 
+  
   if($rbac->getRoleNameFromId($_SESSION['role']) == 'user'){
     echo '<script>
     alert("Invalid access!");
     window.location.href="../index.php";
-  </script>'; 
+    </script>'; 
   }
   else{
     echo '<!DOCTYPE html>';

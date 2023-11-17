@@ -38,7 +38,7 @@ if(isset($_POST['submitted'])){
             if ($row['status'] == 1){
                 session_start(); //start the session
                 $_SESSION['userID'] = $row['ID'];
-                $_SESSION['role'] =  $row['role'];
+                $_SESSION['role'] =  $row['roleId'];
                 $_SESSION['loggedin'] = true;
 
                 if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
