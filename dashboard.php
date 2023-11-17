@@ -1,4 +1,7 @@
 <?php
+require_once 'rbac.php';
+$rbac = new RBAC();
+
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 $_SESSION['userID'];
@@ -22,19 +25,30 @@ $STATUS_APPROVED = "APPROVED BY ADMIN";
 
 
 if(isset($_POST['submitted'])){
+  
+  $permissions = $rbac->getPermissions($_SESSION["role"]);
+
   $action = $_POST['submit'];
   $foundID = $_POST['foundID'];
-  if(isset($foundID)){
-    $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
-              header("Refresh:0");
+
+  if($rbac->hasPermission("resolve_report", $permissions)){
+    if(isset($foundID)){
+      $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
+                header("Refresh:0");
+    }
+    else{
+      $itemID = $_POST['itemID'];
+      $update = "UPDATE lost_items SET status = 3 WHERE id = '$itemID'";
+                header("Refresh:0");
+    }
+  
+    $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
   }
   else{
-    $itemID = $_POST['itemID'];
-    $update = "UPDATE lost_items SET status = 3 WHERE id = '$itemID'";
-              header("Refresh:0");
+    echo '<span>NO PERMISSIONS</span>';
   }
 
-  $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
+  
 }
 
 echo '<!DOCTYPE html>';

@@ -1,4 +1,7 @@
 <?php
+  require_once 'rbac.php';
+  $rbac = new RBAC();
+
   error_reporting(E_ALL);  //give warning if session cannot start
   session_start(); //start the session
   if(!isset($_SESSION['userID'])){
@@ -12,7 +15,10 @@
   $dbPort = 3306;
 
   $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+
+
   if(isset($_POST['submitted'])){
+    $permissions = $rbac->getPermissions($_SESSION["role"]);
     $isSuccess = false;
 
     $itemName = $_POST['item'];
@@ -27,13 +33,21 @@
 
     if(empty($color)) $color = NULL;
     if(empty($brand)) $brand = NULL;
+    
+    if($rbac->hasPermission("add_lost_item", $permissions)){
+      
 
-    $query = "INSERT INTO lost_items (userID, itemName, category, color, brand, description, lost_date, lost_time, location, image, status)
-    VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
+      $query = "INSERT INTO lost_items (userID, itemName, category, color, brand, description, lost_date, lost_time, location, image, status)
+      VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "',". '0' . ")";
 
-    if ($conn->query($query) === TRUE) {
-      $isSuccess = true;
+      if ($conn->query($query) === TRUE) {
+        $isSuccess = true;
+      }
     }
+    else{
+      echo '<span>NO PERMISSIONS</span>';
+    }
+    
 
     $conn->close();
 
