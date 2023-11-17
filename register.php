@@ -1,4 +1,7 @@
 <?php
+require_once 'rbac.php';
+$rbac = new RBAC();
+
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 
@@ -82,7 +85,8 @@ if(isset($_POST['submitted'])){
     $password = $_POST['password'];
     $contact_number = $_POST['number'];
     $address = $_POST['address'];
-    $role = 'user';
+    $role_query = "SELECT * FROM roles WHERE role_name='user'";
+    $result_role_query = mysqli_query($conn, $role_query) or die(mysqli_error($conn));
     $status = '1';
 
     //checking if user already exists
@@ -94,9 +98,12 @@ if(isset($_POST['submitted'])){
         echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"red\">Email has been used.</font></span>";
     }
     else{
+
+        $new_role = $rbac->getRoleIdFromName('user');
+        
         //if user does not exist in database
-        $query = "INSERT INTO users (username, email, password, contact_no, address, role, status)
-                  VALUES " . "('" .$name. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$address. "','" .$role. "','" .$status. "')";
+        $query = "INSERT INTO users (username, email, password, contact_no, address, roleId, status)
+                  VALUES " . "('" .$name. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$address. "','" .$new_role. "','" .$status. "')";
 
         $conn->query($query);
         echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"green\">Successfully registered.</font></span>";

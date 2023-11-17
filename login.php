@@ -1,4 +1,7 @@
 <?php
+require_once 'rbac.php';
+$rbac = new RBAC();
+
 error_reporting(E_ALL);  //give warning if session cannot start
 ini_set('display_errors', 1);
 
@@ -9,6 +12,8 @@ $dbName = "gotit_db";
 $dbPort = 3306;
 
 $conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+
+
 
 //if user is already logged in, redirect them to home page
 if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true){
@@ -24,6 +29,7 @@ if(isset($_POST['submitted'])){
     $credentials = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
     $result_login = $conn->query($credentials);
 
+
     //validating credentials
     if($conn->query($credentials) == true){
         while($row = mysqli_fetch_assoc($result_login)){
@@ -35,7 +41,7 @@ if(isset($_POST['submitted'])){
                 $_SESSION['role'] =  $row['role'];
                 $_SESSION['loggedin'] = true;
 
-                if ($row['role'] == "admin" || $row['role'] == "superadmin"){
+                if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
                     header("location: admin/dashboard.php");
                 } else {
                     //redirecting user to home page
