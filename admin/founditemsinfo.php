@@ -4,9 +4,30 @@ $rbac = new RBAC();
 
 session_start();
 
-if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
+if (!isset($_SESSION['userID']) || !isset($_SESSION['token'])) {
     header("Location: ../login.php");
 }
+
+// set the session timeout to 30 minutes (1800 seconds)
+$sessionTimeout = 1800;
+
+// check if the session has expired
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $sessionTimeout)) {
+    // session expired, destroy the session and redirect to login
+    session_unset();
+    session_destroy();
+
+    // display an alert using JavaScript
+    echo '<script>alert("Session expired. Please log in again.");</script>';
+
+    // redirect to login page
+    echo '<script>window.location.href = "../login.php";</script>';
+
+    exit();
+}
+
+// update the last activity timestamp
+$_SESSION['last_activity'] = time();
 
 $dbServername = "localhost";
 $dbUsername = "root";
@@ -14,16 +35,15 @@ $dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
-$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+$conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
 
-if($rbac->getRoleNameFromId($_SESSION['role']) == 'user'){
+if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user') {
     echo '<script>
     alert("Invalid access!");
     window.location.href="../index.php";
-    </script>'; 
-}
-else{
+    </script>';
+} else {
     echo '<!DOCTYPE html>';
     echo '<html>';
     echo '';
@@ -63,7 +83,7 @@ else{
     echo '<li class="tm-nav-li"><a href="lostitems.php" class="custom-link">Lost Items</a></li>';
     echo '<li class="tm-nav-li"><a href="founditems.php" class="custom-link active">Found Items</a></li>';
     echo '<li class="tm-nav-li"><a href="manageusers.php" class="custom-link">Manage Users</a></li>';
-    if($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin"){
+    if ($rbac->getRoleNameFromId($_SESSION['role']) == "superadmin") {
         echo '<li class="tm-nav-li"><a href="manage-admin.php" class="custom-link">Manage Admins</a></li>';
     }
     echo '<li class="tm-nav-li"><a href="../logout.php" class="custom-link">Logout</a></li>';
@@ -88,69 +108,66 @@ else{
 
     if (isset($_POST['foundId'])) {
         $itemID = $_POST['foundId'];
-    }
-    else{
+    } else {
         echo "<p class=\"itemInfo\"><b>Unable to get parameter!</b></p>";
     }
     $sql_itemInfo = "SELECT * FROM found_items
                     WHERE ID = $itemID";
     $retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
 
-    if(!$retval_itemInfo){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+    if (!$retval_itemInfo) {
+        echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+    }
 
     $result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
 
     if (mysqli_num_rows($result_itemInfo) > 0) {
-        while($row = mysqli_fetch_assoc($result_itemInfo)){
-        $userID = $row['userID'];
-        $image = $row["image"];
-        echo '<div class="custom-item-profile">';
-        echo '<div style="float:left; width: 400px;" class="custom-div-section item-section extra-margin-left">';
-        echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
-        echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
-        echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
-        echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
-        echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
-        echo "<p class=\"itemInfo\"><b>found Date:</b> {$row['found_date']}</p>";
-        echo "<p class=\"itemInfo\"><b>found Time:</b> {$row['found_time']}</p>";
-        echo "<p class=\"itemInfo\"><b>Location found:</b> {$row['location']}</p>";
+        while ($row = mysqli_fetch_assoc($result_itemInfo)) {
+            $userID = $row['userID'];
+            $image = $row["image"];
+            echo '<div class="custom-item-profile">';
+            echo '<div style="float:left; width: 400px;" class="custom-div-section item-section extra-margin-left">';
+            echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
+            echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
+            echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
+            echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
+            echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
+            echo "<p class=\"itemInfo\"><b>found Date:</b> {$row['found_date']}</p>";
+            echo "<p class=\"itemInfo\"><b>found Time:</b> {$row['found_time']}</p>";
+            echo "<p class=\"itemInfo\"><b>Location found:</b> {$row['location']}</p>";
 
 
-        $sql_contact = "SELECT * FROM users
+            $sql_contact = "SELECT * FROM users
                         WHERE ID = '$userID'";
-        $retval_contact = mysqli_query($conn, $sql_contact);
-        if(!$retval_contact){
-            echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
-        }
-        $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
-        if (mysqli_num_rows($result_contact) > 0){
-            while($row = mysqli_fetch_assoc($result_contact)){
-            echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
-            echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
-            echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+            $retval_contact = mysqli_query($conn, $sql_contact);
+            if (!$retval_contact) {
+                echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
             }
-        }
-        else{
-            echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
-        }
-
+            $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
+            if (mysqli_num_rows($result_contact) > 0) {
+                while ($row = mysqli_fetch_assoc($result_contact)) {
+                    echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
+                    echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
+                    echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+                }
+            } else {
+                echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
+            }
         }
         echo '</div>';
         echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
-        if($image != null){
-            echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-        }
-        else{
+        if ($image != null) {
+            echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+        } else {
             echo '<img class="custom-item-image-medium" src="../img/nip.jpg"/>';
         }
         echo '</div>';
         echo '</div>';
-    }
-    else{
+    } else {
         echo "<p style=\"margin-left: 15px;\"><b>Unable to fetch item data!</b></p>";
     }
 
-    mysqli_close ($conn);
+    mysqli_close($conn);
 
     echo '</main>';
     echo '';
@@ -165,6 +182,3 @@ else{
     echo '</body>';
     echo '</html>';
 }
-
-
-?>

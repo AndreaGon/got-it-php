@@ -5,9 +5,31 @@ $rbac = new RBAC();
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 $_SESSION['userID'];
-if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
-    header("Location:login.php");
+
+if (!isset($_SESSION['userID']) || !isset($_SESSION['token'])) {
+  header("Location:login.php");
 }
+
+// set the session timeout to 30 minutes (1800 seconds)
+$sessionTimeout = 1800;
+
+// check if the session has expired
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $sessionTimeout)) {
+  // session expired, destroy the session and redirect to login
+  session_unset();
+  session_destroy();
+
+  // display an alert using JavaScript
+  echo '<script>alert("Session expired. Please log in again.");</script>';
+
+  // redirect to login page
+  echo '<script>window.location.href = "login.php";</script>';
+
+  exit();
+}
+
+// update the last activity timestamp
+$_SESSION['last_activity'] = time();
 
 $dbServername = "localhost";
 $dbUsername = "root";
@@ -15,7 +37,7 @@ $dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
-$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+$conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
 
 $STATUS_PENDING = "PENDING MATCH";
@@ -24,31 +46,27 @@ $STATUS_FOUND = "FOUND";
 $STATUS_APPROVED = "APPROVED BY ADMIN";
 
 
-if(isset($_POST['submitted'])){
-  
+if (isset($_POST['submitted'])) {
+
   $permissions = $rbac->getPermissions($_SESSION["role"]);
 
   $action = $_POST['submit'];
   $foundID = $_POST['foundID'];
 
-  if($rbac->hasPermission("resolve_report", $permissions)){
-    if(isset($foundID)){
+  if ($rbac->hasPermission("resolve_report", $permissions)) {
+    if (isset($foundID)) {
       $update = "UPDATE found_items SET status = 3 WHERE id = '$foundID'";
-                header("Refresh:0");
-    }
-    else{
+      header("Refresh:0");
+    } else {
       $itemID = $_POST['itemID'];
       $update = "UPDATE lost_items SET status = 3 WHERE id = '$itemID'";
-                header("Refresh:0");
+      header("Refresh:0");
     }
-  
+
     $isUpdateSuccess = mysqli_query($conn, $update) or die(mysqli_error($conn));
-  }
-  else{
+  } else {
     echo '<span>NO PERMISSIONS</span>';
   }
-
-  
 }
 
 echo '<!DOCTYPE html>';
@@ -89,10 +107,9 @@ echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="tm-nav-link">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-if(!isset($_SESSION['userID'])){
-    echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-}
-else{
+if (!isset($_SESSION['userID'])) {
+  echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
+} else {
   echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link active">Dashboard</a></li>';
 }
 echo '</ul>';
@@ -108,19 +125,25 @@ $sql_userInfo = "SELECT * FROM users
                  WHERE ID = $id";
 $retval_userInfo = mysqli_query($conn, $sql_userInfo);
 
-if(!$retval_userInfo){echo '<p class=\"itemInfo\"><b>Error displaying user data...</b></p>';}
+if (!$retval_userInfo) {
+  echo '<p class=\"itemInfo\"><b>Error displaying user data...</b></p>';
+}
 
 $result_userInfo = mysqli_query($conn, $sql_userInfo) or die(mysqli_error($conn));
 
 if (mysqli_num_rows($result_userInfo) > 0) {
-  while($row = mysqli_fetch_assoc($result_userInfo)){
+  while ($row = mysqli_fetch_assoc($result_userInfo)) {
     echo '<div class="custom-item-profile">';
     echo '<div style="float:left;" class="custom-div-section item-section extra-margin-left">';
     echo "<h2 float=\"left\" class=\"tm-section-title\"><b>User Profile</b></h2>";
-    echo '<p><b>Username:</b> ' . $row['username']; '</p>';
-    echo '<p><b>Email:</b> ' . $row['email']; '</p>';
-    echo '<p><b>Contact Number:</b> ' . $row['contact_no']; '</p>';
-    echo '<p><b>Address:</b> ' . $row['address']; '</p>';
+    echo '<p><b>Username:</b> ' . $row['username'];
+    '</p>';
+    echo '<p><b>Email:</b> ' . $row['email'];
+    '</p>';
+    echo '<p><b>Contact Number:</b> ' . $row['contact_no'];
+    '</p>';
+    echo '<p><b>Address:</b> ' . $row['address'];
+    '</p>';
     echo '<br/>';
     echo '<a href="logout.php">Logout of your account</a>';
     echo '</div>';
@@ -135,27 +158,28 @@ $sql_lostItems = "SELECT * FROM lost_items
                  WHERE userID = $id AND status != 3";
 $retval_lostItems = mysqli_query($conn, $sql_lostItems);
 
-if(!$retval_lostItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+if (!$retval_lostItems) {
+  echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+}
 
 $result_lostItems = mysqli_query($conn, $sql_lostItems) or die(mysqli_error($conn));
 
 echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Lost Items</b></h2>";
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page">';
 if (mysqli_num_rows($result_lostItems) > 0) {
-  while($row = mysqli_fetch_assoc($result_lostItems)){
+  while ($row = mysqli_fetch_assoc($result_lostItems)) {
     $itemID = $row['ID'];
     $image = $row["image"];
 
     echo '<article class="custom-item-container" style="overflow-x: hidden; height:auto;">';
-    if($image != null){
-        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-    }
-    else{
-        echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
+    if ($image != null) {
+      echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+    } else {
+      echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
     }
     echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
     echo "<p style='overflow-x: hidden;' class=\"tm-gallery-description\">{$row['description']}</p>";
-    switch($row['status']){
+    switch ($row['status']) {
       case 0:
         echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
         break;
@@ -167,16 +191,15 @@ if (mysqli_num_rows($result_lostItems) > 0) {
         break;
     }
     echo "<a class='custom-link button'  style='margin-top:30px;' href=\"item.php?itemInfoID=$itemID\">See item</a>";
-    if ($row['status'] == 2){
-        echo "<a class='custom-link button'  style='margin-top:30px;margin-left:0px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
+    if ($row['status'] == 2) {
+      echo "<a class='custom-link button'  style='margin-top:30px;margin-left:0px;' href=\"matched_item.php?lostID=$itemID\">See matched</a>";
     }
-    if ($row['status'] != 3){
+    if ($row['status'] != 3) {
       echo "<form action=\"dashboard.php\" method=\"POST\">";
       echo "<input type=\"hidden\" name=\"itemID\" value=\"$itemID\"/>";
-      if ($row['status'] == 1 || $row['status'] == 2){
+      if ($row['status'] == 1 || $row['status'] == 2) {
         echo "<input type=\"Submit\" style=\"margin-top:10px;width:100px; float:left;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
-      }
-      else{
+      } else {
         echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
       }
 
@@ -184,7 +207,7 @@ if (mysqli_num_rows($result_lostItems) > 0) {
       echo "</form>";
     }
     echo '</article>';
-    }
+  }
 }
 echo '</div>';
 echo '</div>';
@@ -198,28 +221,29 @@ $sql_foundItems = "SELECT * FROM found_items
                  WHERE userID = $id";
 $retval_foundItems = mysqli_query($conn, $sql_foundItems);
 
-if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+if (!$retval_foundItems) {
+  echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+}
 
 $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
 
 echo "<h2 align=\"left\" class=\"tm-section-title\" style=\"margin-bottom:10px\"><b>Submitted Found Items</b></h2>";
 echo '<div id="tm-gallery-page-pizza" class="tm-gallery-page" >';
 if (mysqli_num_rows($result_foundItems) > 0) {
-  while($row = mysqli_fetch_assoc($result_foundItems)){
-    if ($row['status']!=3){
+  while ($row = mysqli_fetch_assoc($result_foundItems)) {
+    if ($row['status'] != 3) {
       $foundItemID = $row['ID'];
       $image = $row["image"];
 
       echo '<article class="custom-item-container" style="overflow-x: hidden; height:auto;">';
-      if($image != null){
-          echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-      }
-      else{
-          echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
+      if ($image != null) {
+        echo '<img class="custom-item-thumbnail" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+      } else {
+        echo '<img class="custom-item-thumbnail" src="img/nip.jpg"/>';
       }
       echo "<h4 class=\"tm-gallery-title\">{$row['itemName']}</h4>";
       echo "<p style='overflow-x: hidden;' class=\"tm-gallery-description\">{$row['description']}</p>";
-      switch($row['status']){
+      switch ($row['status']) {
         case 0:
           echo "<p class=\"tm-gallery-description\"><b>Status: </b>{$STATUS_PENDING}</p>";
           break;
@@ -231,7 +255,7 @@ if (mysqli_num_rows($result_foundItems) > 0) {
           break;
       }
       echo "<a class='custom-link button'  style='margin-top:30px;' href=\"founditem.php?itemInfoID=$foundItemID\">See item</a>";
-      if ($row['status'] != 3){
+      if ($row['status'] != 3) {
         echo "<form action=\"dashboard.php\" method=\"POST\">";
         echo "<input type=\"hidden\" name=\"foundID\" value=\"$foundItemID\"/>";
         echo "<input type=\"Submit\" style=\"margin-top:-38px;width:100px; float:right;margin-right:50px; font-family:'Open Sans', Arial, sans-serif; font-size: 17px;\" class=\"custom-button\" name=\"submit\" value=\"Resolve\"/>";
@@ -240,7 +264,7 @@ if (mysqli_num_rows($result_foundItems) > 0) {
       }
       echo '</article>';
     }
-    }
+  }
 }
 echo '</div>';
 echo '</div>';

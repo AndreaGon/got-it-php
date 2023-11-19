@@ -11,17 +11,17 @@ $dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
-$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
+$conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
 
 
 //if user is already logged in, redirect them to home page
-if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true){
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     header("location: index.php");
     exit;
 }
 
-if(isset($_POST['submitted'])){
+if (isset($_POST['submitted'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -31,11 +31,11 @@ if(isset($_POST['submitted'])){
 
 
     //validating credentials
-    if($conn->query($credentials) == true){
-        while($row = mysqli_fetch_assoc($result_login)){
+    if ($conn->query($credentials) == true) {
+        while ($row = mysqli_fetch_assoc($result_login)) {
             //telling the system that the user is entitled to be logged in
 
-            if ($row['status'] == 1){
+            if ($row['status'] == 1) {
                 session_start(); //start the session
                 $_SESSION['userID'] = $row['ID'];
                 $_SESSION['role'] =  $row['roleId'];
@@ -47,7 +47,7 @@ if(isset($_POST['submitted'])){
                 // store the token in the session variable
                 $_SESSION['token'] = $token;
 
-                if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
+                if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin") {
                     header("location: admin/dashboard.php");
                 } else {
                     //redirecting user to home page
@@ -58,18 +58,14 @@ if(isset($_POST['submitted'])){
                 // User is inactive, show error message
                 $credential_error = "Your account is inactive.";
             }
-
         }
-    }
-    else{
+    } else {
         //display error message if email and password do not match data in the database
         $credential_error = "Email and password are incorrect";
     }
 
     $conn->close();
-
-}
-else{
+} else {
     echo '<!DOCTYPE html>';
     echo '<html>';
     echo '';
@@ -110,11 +106,10 @@ else{
     echo '<li class="tm-nav-li"><a href="index.php" class="custom-link">Home</a></li>';
     echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
     echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-    if(!isset($_SESSION['userID'])){
+    if (!isset($_SESSION['userID'])) {
         echo '<li class="tm-nav-li"><a href="login.php" class="custom-link active">Login/Register</a></li>';
-    }
-    else{
-      echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+    } else {
+        echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
     }
 
     echo '</ul>';
@@ -145,10 +140,10 @@ else{
     echo '<div class="form-group tm-d-flex">';
     echo '<button type="submit" class="tm-btn tm-btn-success tm-btn-right">';
     echo '<input type="hidden" name="submitted" value="true">'; //letting the file know that the submit button has been clicked
-        //if credentials are correct, redirect to home page. if not, display error message
-        if(!empty($_POST['submitted'])){
-            $login_status;
-        }
+    //if credentials are correct, redirect to home page. if not, display error message
+    if (!empty($_POST['submitted'])) {
+        $login_status;
+    }
     echo 'Submit';
     echo '</button>';
     echo '</div>';
@@ -173,4 +168,3 @@ else{
     echo '</html>';
     echo '';
 }
-?>
