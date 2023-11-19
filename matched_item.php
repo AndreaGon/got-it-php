@@ -1,9 +1,30 @@
 <?php
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
-if(!isset($_SESSION['userID'])){
+if (!isset($_SESSION['userID']) || !isset($_SESSION['token'])) {
     header("Location:login.php");
 }
+
+// set the session timeout to 30 minutes (1800 seconds)
+$sessionTimeout = 1800;
+
+// check if the session has expired
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $sessionTimeout)) {
+    // session expired, destroy the session and redirect to login
+    session_unset();
+    session_destroy();
+
+    // display an alert using JavaScript
+    echo '<script>alert("Session expired. Please log in again.");</script>';
+
+    // redirect to login page
+    echo '<script>window.location.href = "login.php";</script>';
+
+    exit();
+}
+
+// update the last activity timestamp
+$_SESSION['last_activity'] = time();
 
 $dbServername = "localhost";
 $dbUsername = "root";
@@ -11,10 +32,10 @@ $dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
-$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
-if(isset($_POST['submitted'])){
-  $updatLost = "UPDATE lost_items SET status = 2 WHERE id = $lostID";
-  $resolveLost = mysqli_query($conn, $updateLost) or die(mysqli_error($conn));
+$conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
+if (isset($_POST['submitted'])) {
+    $updatLost = "UPDATE lost_items SET status = 2 WHERE id = $lostID";
+    $resolveLost = mysqli_query($conn, $updateLost) or die(mysqli_error($conn));
 }
 
 echo '<!DOCTYPE html>';
@@ -55,11 +76,10 @@ echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="tm-nav-link">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-if(!isset($_SESSION['userID'])){
+if (!isset($_SESSION['userID'])) {
     echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-}
-else{
-  echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+} else {
+    echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
 }
 echo '</ul>';
 echo '</nav>';
@@ -83,81 +103,80 @@ echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-top:75
 
 if (isset($_GET['lostID'])) {
     $lostID = $_GET['lostID'];
-}
-else{
+} else {
     echo "<p class=\"itemInfo\"><b>Unable to get parameter!</b></p>";
 }
 $sql_matchedItems = "SELECT * FROM matched_items
                     WHERE lost_id = $lostID";
 $retval_matchedItems = mysqli_query($conn, $sql_matchedItems);
 
-if(!$retval_matchedItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
+if (!$retval_matchedItems) {
+    echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+}
 
 $result_matchedItems = mysqli_query($conn, $sql_matchedItems) or die(mysqli_error($conn));
 
 if (mysqli_num_rows($result_matchedItems) > 0) {
-    while($row = mysqli_fetch_assoc($result_matchedItems)){
-    $foundItemID = $row['found_id'];
+    while ($row = mysqli_fetch_assoc($result_matchedItems)) {
+        $foundItemID = $row['found_id'];
 
-    $sql_foundItems = "SELECT * FROM found_items
+        $sql_foundItems = "SELECT * FROM found_items
                         WHERE ID = $foundItemID";
-    $retval_foundItems = mysqli_query($conn, $sql_foundItems);
-    if(!$retval_foundItems){echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';}
-    $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
+        $retval_foundItems = mysqli_query($conn, $sql_foundItems);
+        if (!$retval_foundItems) {
+            echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+        }
+        $result_foundItems = mysqli_query($conn, $sql_foundItems) or die(mysqli_error($conn));
 
-    if (mysqli_num_rows($result_foundItems) > 0){
-        while($row = mysqli_fetch_assoc($result_foundItems)){
-            $userID = $row['userID'];
-            $image = $row["image"];
-            echo '<div class="custom-item-profile">';
-            echo '<div style="float:left;width: 400px;" class="custom-div-section item-section extra-margin-left">';
-            echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
-            echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
-            echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
-            echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
-            echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
-            echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['found_date']}</p>";
-            echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['found_time']}</p>";
-            echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
+        if (mysqli_num_rows($result_foundItems) > 0) {
+            while ($row = mysqli_fetch_assoc($result_foundItems)) {
+                $userID = $row['userID'];
+                $image = $row["image"];
+                echo '<div class="custom-item-profile">';
+                echo '<div style="float:left;width: 400px;" class="custom-div-section item-section extra-margin-left">';
+                echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
+                echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
+                echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
+                echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
+                echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
+                echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['found_date']}</p>";
+                echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['found_time']}</p>";
+                echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
 
-            $sql_contact = "SELECT * FROM users
+                $sql_contact = "SELECT * FROM users
                             WHERE ID = '$userID'";
-            $retval_contact = mysqli_query($conn, $sql_contact);
-            if(!$retval_contact){
-                echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
-            }
-            $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
-            if (mysqli_num_rows($result_contact) > 0){
-                while($row = mysqli_fetch_assoc($result_contact)){
-                echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
-                echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
-                echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+                $retval_contact = mysqli_query($conn, $sql_contact);
+                if (!$retval_contact) {
+                    echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
+                }
+                $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
+                if (mysqli_num_rows($result_contact) > 0) {
+                    while ($row = mysqli_fetch_assoc($result_contact)) {
+                        echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
+                        echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
+                        echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+                    }
+                } else {
+                    echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
                 }
             }
-            else{
-                echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
+
+            echo '</div>';
+            echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
+            if ($image != null) {
+                echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+            } else {
+                echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
             }
-
+            echo '</div>';
+            echo '</div>';
         }
-
-        echo '</div>';
-        echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
-        if($image != null){
-            echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,'.base64_encode( $image ).'"/>';
-        }
-        else{
-            echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
-        }
-        echo '</div>';
-        echo '</div>';
     }
-    }
-}
-else{
+} else {
     echo "<p style=\"margin-left: 15px;\"><b>Unable to fetch item data!</b></p>";
 }
 
-mysqli_close ($conn);
+mysqli_close($conn);
 
 echo '</main>';
 echo '';
@@ -171,4 +190,3 @@ echo '<script src="js/jquery.min.js"></script>';
 echo '<script src="js/parallax.min.js"></script>';
 echo '</body>';
 echo '</html>';
-?>
