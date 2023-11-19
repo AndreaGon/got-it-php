@@ -5,19 +5,16 @@ $rbac = new RBAC();
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
 
-
 $dbServername = "localhost";
 $dbUsername = "root";
 $dbPassword = "";
 $dbName = "gotit_db";
 $dbPort = 3306;
 
-$conn = mysqli_connect($dbServername ,$dbUsername,$dbPassword,$dbName);
-
+$conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
 echo '<!DOCTYPE html>';
 echo '<html>';
-echo '';
 echo '<head>';
 echo '<meta charset="UTF-8" />';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1.0" />';
@@ -28,27 +25,17 @@ echo '<link href="css/all.min.css" rel="stylesheet" />';
 echo '<link href="css/templatemo-style.css" rel="stylesheet" />';
 echo '<link href="css/custom.css" media="all" rel="stylesheet" />';
 echo '</head>';
-echo '<!--';
-echo '';
-echo 'Simple House';
-echo '';
-echo 'https://templatemo.com/tm-539-simple-house';
-echo '';
-echo '-->';
 echo '<body>';
-echo '';
 
 //header + navigation bar
 echo '<div class="container">';
-echo '<!-- Top box -->';
-echo '<!-- Logo & Site Name -->';
 echo '<div class="custom-placeholder">';
 echo '<div class="parallax-window">';
 echo '<div class="tm-header">';
 echo '<div class="row tm-header-inner">';
 echo '<div class="col-md-6 col-12">';
 echo '<div class="tm-site-text-box">';
-echo '<img class="tm-site-logo" width="150" src = "img/logo.png"/>';
+echo '<img class="tm-site-logo" width="150" src="img/logo.png"/>';
 echo '</div>';
 echo '</div>';
 echo '<nav class="col-md-6 col-12 tm-nav">';
@@ -56,11 +43,10 @@ echo '<ul class="tm-nav-ul">';
 echo '<li class="tm-nav-li"><a href="index.php" class="custom-link active">Home</a></li>';
 echo '<li class="tm-nav-li"><a href="lostitemform.php" class="custom-link">Lost Item Report</a></li>';
 echo '<li class="tm-nav-li"><a href="founditemform.php" class="custom-link">Found Item Report</a></li>';
-if(!isset($_SESSION['userID'])){
+if (!isset($_SESSION['userID'])) {
     echo '<li class="tm-nav-li"><a href="login.php" class="custom-link">Login/Register</a></li>';
-}
-else{
-  echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
+} else {
+    echo '<li class="tm-nav-li"><a href="dashboard.php" class="custom-link">Dashboard</a></li>';
 }
 echo '</ul>';
 echo '</nav>';
@@ -68,18 +54,18 @@ echo '</div>';
 echo '</div>';
 echo '</div>';
 echo '</div>';
-echo '';
+
+// Register Form
 echo '<main>';
 echo '<header class="row tm-welcome-section">';
 echo '<h2 class="col-12 text-center tm-section-title">Register Account</h2>';
 echo '</header>';
-echo '';
 
-//register form
 echo '<div class="tm-container-login" style="width: 70%">';
-echo '<form action="register.php" method="POST" class="tm-login-form">';
-//register form processing
-if(isset($_POST['submitted'])){
+echo '<form action="register.php" method="POST" class="tm-login-form" onsubmit="return validateForm()">';
+
+// Register Form Processing
+if (isset($_POST['submitted'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -89,73 +75,92 @@ if(isset($_POST['submitted'])){
     $result_role_query = mysqli_query($conn, $role_query) or die(mysqli_error($conn));
     $status = '1';
 
-    //checking if user already exists
+    // Checking if user already exists
     $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
     $result_register = mysqli_query($conn, $checking_user_existence) or die(mysqli_error($conn));
 
-    //if user already exists
-    if(mysqli_num_rows($result_register) > 0){
-        echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"red\">Email has been used.</font></span>";
-    }
-    else{
-
+    // If user already exists
+    if (mysqli_num_rows($result_register) > 0) {
+        echo "<span style=\"display: block; background-color: #9ffa91; padding: 20px;\"><font color=\"red\">Email has been used.</font></span>";
+    } else {
         $new_role = $rbac->getRoleIdFromName('user');
-        
-        //if user does not exist in database
+
+        // If user does not exist in the database
         $query = "INSERT INTO users (username, email, password, contact_no, address, roleId, status)
-                  VALUES " . "('" .$name. "','" .$email. "','" .$password. "','" .$contact_number. "', '" .$address. "','" .$new_role. "','" .$status. "')";
+                  VALUES " . "('" . $name . "','" . $email . "','" . $password . "','" . $contact_number . "', '" . $address . "','" . $new_role . "','" . $status . "')";
 
         $conn->query($query);
-        echo "<span style=\"display: block; backgorund-color: #9ffa91; padding: 20px;\"><font color=\"green\">Successfully registered.</font></span>";
+        echo "<span style=\"display: block; background-color: #9ffa91; padding: 20px;\"><font color=\"green\">Successfully registered.</font></span>";
     }
 
     $conn->close();
-
 }
-echo '';
+
 echo '<div class="form-group">';
-echo '<input type="text" name="name" class="form-control" placeholder="Name" required="" />';
+echo '    <input type="text" name="name" class="form-control" placeholder="Name" required="" />';
 echo '</div>';
-echo '';
+
 echo '<div class="form-group">';
-echo '<input type="email" name="email" class="form-control" placeholder="Email" required="" />';
+echo '    <input type="email" name="email" class="form-control" placeholder="Email" required="" />';
 echo '</div>';
-echo '';
+
 echo '<div class="form-group">';
-echo '<input type="password" name="password" class="form-control" placeholder="Password" required="" />';
+echo '    <input type="password" name="password" class="form-control" placeholder="Password" required="" />';
 echo '</div>';
-echo '';
+
 echo '<div class="form-group">';
-echo '<input type="text" name="number" class="form-control" placeholder="Contact Number" required="" />';
+echo '    <input type="text" name="number" class="form-control" placeholder="Contact Number" required="" />';
 echo '</div>';
-echo '';
+
 echo '<div class="form-group">';
-echo '<input type="text" name="address" class="form-control" placeholder="Address" required="" />';
+echo '    <input type="text" name="address" class="form-control" placeholder="Address" required="" />';
 echo '</div>';
-echo '';
+
+// Privacy Policy Checkbox
 echo '<div class="form-group tm-d-flex">';
-echo '<button type="submit" class="tm-btn tm-btn-success tm-btn-right">';
-echo '<input type="hidden" name="submitted" value="true">';
-echo 'Register';
-echo '</button>';
+echo '    <label>';
+echo '        <input type="checkbox" id="privacyCheckbox"> I have read and accept the <a href="#" onclick="openPrivacyPolicy()">Privacy Policy</a>';
+echo '    </label>';
 echo '</div>';
+
+echo '<div class="form-group tm-d-flex">';
+echo '    <button type="submit" class="tm-btn tm-btn-success tm-btn-right">';
+echo '        <input type="hidden" name="submitted" value="true">';
+echo '        Register';
+echo '    </button>';
+echo '</div>';
+
 echo '</form>';
 echo '<p> Have an account? <a href="login.php">Login here instead!</a></p>';
 echo '</div>';
-echo '';
 echo '</main>';
-echo '';
 
-//footer
+// Footer
 echo '<footer class="tm-footer text-center">';
-echo '<p>Copyright &copy; 2020 Simple House';
-echo '';
-echo '| Design: <a rel="nofollow" href="https://templatemo.com">TemplateMo</a></p>';
+echo '    <p>Copyright &copy; 2020 Simple House';
+echo '    | Design: <a rel="nofollow" href="https://templatemo.com">TemplateMo</a></p>';
 echo '</footer>';
 echo '</div>';
+
+// JavaScript for Privacy Policy Pop-up and form validation
+echo '<script>';
+echo 'function openPrivacyPolicy() {';
+echo '    var privacyWindow = window.open("privacy_policy.php", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=50,left=50,width=800,height=600");';
+echo '    privacyWindow.focus();';
+echo '}';
+echo '';
+echo 'function validateForm() {';
+echo '    var checkbox = document.getElementById("privacyCheckbox");';
+echo '    if (!checkbox.checked) {';
+echo '        alert("Please read and accept the Privacy Policy.");';
+echo '        return false;';
+echo '    }';
+echo '    return true;';
+echo '}';
+echo '</script>';
+
 echo '<script src="js/jquery.min.js"></script>';
 echo '<script src="js/parallax.min.js"></script>';
 echo '</body>';
 echo '</html>';
-echo '';
 ?>
