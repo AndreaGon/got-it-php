@@ -5,9 +5,31 @@ $rbac = new RBAC();
 session_start();
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
-if(!isset($_SESSION['userID'])){
+
+if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
     header("Location: ../login.php");
 }
+
+// set the session timeout to 30 minutes (1800 seconds)
+$sessionTimeout = 1800;
+
+// check if the session has expired
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $sessionTimeout)) {
+  // session expired, destroy the session and redirect to login
+  session_unset();
+  session_destroy();
+
+  // display an alert using JavaScript
+  echo '<script>alert("Session expired. Please log in again.");</script>';
+
+  // redirect to login page
+  echo '<script>window.location.href = "../login.php";</script>';
+
+  exit();
+}
+
+// update the last activity timestamp
+$_SESSION['last_activity'] = time();
 
 $dbServername = "localhost";
 $dbUsername = "root";
