@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);  //give warning if session cannot start
 session_start(); //start the session
-if(!isset($_SESSION['userID'])){
+if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
     header("Location:login.php");
 }
 

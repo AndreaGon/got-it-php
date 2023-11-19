@@ -41,6 +41,12 @@ if(isset($_POST['submitted'])){
                 $_SESSION['role'] =  $row['roleId'];
                 $_SESSION['loggedin'] = true;
 
+                // generate a random token
+                $token = bin2hex(random_bytes(16));
+
+                // store the token in the session variable
+                $_SESSION['token'] = $token;
+
                 if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin"){
                     header("location: admin/dashboard.php");
                 } else {

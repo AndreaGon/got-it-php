@@ -5,7 +5,7 @@
   session_set_cookie_params(0, '/', '', true, true);
   session_start();
   
-  if(!isset($_SESSION['userID'])){
+  if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
     header("Location: ../login.php");
   }
 

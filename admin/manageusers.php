@@ -5,6 +5,10 @@
     error_reporting(E_ALL);
     session_start();
 
+    if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
+        header("Location: ../login.php");
+    }
+
     $dbServername = "localhost";
     $dbUsername = "root";
     $dbPassword = "";

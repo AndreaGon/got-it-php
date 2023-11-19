@@ -4,7 +4,7 @@
 
   session_start();
   
-  if(!isset($_SESSION['userID'])){
+  if(!isset($_SESSION['userID']) || !isset($_SESSION['token'])){
     header("Location: ../login.php");
   }
 
