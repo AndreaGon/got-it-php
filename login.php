@@ -41,6 +41,9 @@ if (isset($_POST['submitted'])) {
                 $_SESSION['role'] =  $row['roleId'];
                 $_SESSION['loggedin'] = true;
 
+                // regenerate the session ID
+                session_regenerate_id(true);
+
                 // generate a random token
                 $token = bin2hex(random_bytes(16));
 
