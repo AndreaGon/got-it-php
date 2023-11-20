@@ -49,16 +49,24 @@ $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 $permissions = $rbac->getPermissions($_SESSION["role"]);
 
 if (isset($_POST['submitted'])) {
-  if ($rbac->hasPermission("delete_admins", $permissions)) {
-    $adminId = $_POST['adminId'];
-    $isDelete = $_POST['submit'];
-    $delete = "DELETE FROM users WHERE id = " . $adminId;
-    $isUpdateSuccess = mysqli_query($conn, $delete) or die(mysqli_error($conn));
-    header("Refresh:0");
-  } else {
-    echo '<script>
+  if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+    if ($rbac->hasPermission("delete_admins", $permissions)) {
+      $adminId = $_POST['adminId'];
+      $isDelete = $_POST['submit'];
+      $delete = "DELETE FROM users WHERE id = " . $adminId;
+      $isUpdateSuccess = mysqli_query($conn, $delete) or die(mysqli_error($conn));
+      header("Refresh:0");
+    } else {
+      echo '<script>
       alert("No permission to delete admin!");
       </script>';
+    }
+  } else {
+    // prompt user to login again
+    echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
+
+    // redirect to login page
+    echo '<script>window.location.href = "../login.php";</script>';
   }
 }
 
@@ -155,6 +163,7 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user' || $rbac->getRoleNameF
                       <center>
                         <form action="manage-admin.php" method="POST">
                         <input type=\'hidden\' name="adminId" value="' . $row['admin_id'] . '"/>
+                        <input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">
                         <input type="Submit" class="custom-button" style="width:100px;" name="submit" value="Delete"/>
                         <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
                         </form>
