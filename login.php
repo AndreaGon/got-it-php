@@ -45,7 +45,7 @@ if (isset($_POST['submitted'])) {
                 session_regenerate_id(true);
 
                 // generate a random token
-                $token = bin2hex(random_bytes(16));
+                $token = bin2hex(random_bytes(32));
 
                 // store the token in the session variable
                 $_SESSION['token'] = $token;

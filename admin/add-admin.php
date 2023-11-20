@@ -40,43 +40,50 @@ $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 $permissions = $rbac->getPermissions($_SESSION["role"]);
 
 if (isset($_POST['submitted'])) {
+  if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+    $adminName = $_POST['adminName'];
+    $role_name = $_POST['role'];
+    $contact_number = $_POST['contact'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-  $adminName = $_POST['adminName'];
-  $role_name = $_POST['role'];
-  $contact_number = $_POST['contact'];
-  $email = $_POST['email'];
-  $password = $_POST['password'];
-
-  if (
-    $adminName == "" ||
-    $role_name == "" ||
-    $contact_number == "" ||
-    $email == "" ||
-    $password == ""
-  ) {
-    $_SESSION['toast_message'] = 'Please fill in all details.';
-    $isSuccess = false;
-  } else {
-    $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
-    $result_register = mysqli_query($conn, $checking_user_existence) or die(mysqli_error($conn));
-
-    if (mysqli_num_rows($result_register) > 0) {
-      $_SESSION['toast_message'] = 'Email has been used.';
+    if (
+      $adminName == "" ||
+      $role_name == "" ||
+      $contact_number == "" ||
+      $email == "" ||
+      $password == ""
+    ) {
+      $_SESSION['toast_message'] = 'Please fill in all details.';
       $isSuccess = false;
     } else {
-      //if user does not exist in database
-      $query = "INSERT INTO users (username, email, password, contact_no, roleId)
+      $checking_user_existence = "SELECT * FROM users WHERE email='$email'";
+      $result_register = mysqli_query($conn, $checking_user_existence) or die(mysqli_error($conn));
+
+      if (mysqli_num_rows($result_register) > 0) {
+        $_SESSION['toast_message'] = 'Email has been used.';
+        $isSuccess = false;
+      } else {
+        //if user does not exist in database
+        $query = "INSERT INTO users (username, email, password, contact_no, roleId)
           VALUES " . "('" . $adminName . "','" . $email . "','" . $password . "','" . $contact_number . "', '" . $rbac->getRoleIdFromName($role_name) . "')";
 
 
-      if ($conn->query($query) === TRUE) {
-        $isSuccess = true;
+        if ($conn->query($query) === TRUE) {
+          $isSuccess = true;
+        }
+
+        $_SESSION['toast_message'] = 'Successfully registered admin';
       }
 
-      $_SESSION['toast_message'] = 'Successfully registered admin';
+      $conn->close();
     }
+  } else {
+    // prompt user to login again
+    echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
 
-    $conn->close();
+    // redirect to login page
+    echo '<script>window.location.href = "../login.php";</script>';
   }
 }
 
@@ -159,6 +166,8 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user' || $rbac->getRoleNameF
     }
 
     echo '<form action="add-admin.php" method="POST" enctype="multipart/form-data">';
+
+    echo '<input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">';
 
     echo '<div style="float:left;" class="custom-div-section">';
     echo '<div class="custom-section">';
