@@ -83,7 +83,7 @@ if (isset($_POST['submitted'])) {
     echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
 
     // redirect to login page
-    echo '<script>window.location.href = "login.php";</script>';
+    echo '<script>window.location.href = "../login.php";</script>';
   }
 }
 
