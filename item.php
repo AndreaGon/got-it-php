@@ -98,62 +98,70 @@ echo "</style>";
 if (isset($_GET['itemInfoID'])) {
     $itemID = $_GET['itemInfoID'];
 } else {
-    echo "<p class=\"itemInfo\"><b>Unable to get parameter!</b></p>";
-}
-$sql_itemInfo = "SELECT * FROM lost_items
-                 WHERE ID = $itemID";
-$retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
-
-if (!$retval_itemInfo) {
-    echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+    $itemID = null;
+    echo '<div style="background-color: #f8d7da; border: 1px solid #9A1717; padding: 10px; margin: 100px 50px;">';
+    echo '<p style="color: #9A1717;"><b>Unable to get parameter!</b></p>';
+    echo '</div>';
 }
 
-$result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
+if ($itemID != null) {
+    $sql_itemInfo = "SELECT * FROM lost_items
+    WHERE ID = $itemID";
+    $retval_itemInfo = mysqli_query($conn, $sql_itemInfo);
 
-if (mysqli_num_rows($result_itemInfo) > 0) {
-    while ($row = mysqli_fetch_assoc($result_itemInfo)) {
-        $userID = $row['userID'];
-        $image = $row["image"];
-        echo '<div class="custom-item-profile">';
-        echo '<div style="float:left; width: 400px;" class="custom-div-section item-section extra-margin-left">';
-        echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
-        echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
-        echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
-        echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
-        echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
-        echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['lost_date']}</p>";
-        echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['lost_time']}</p>";
-        echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
+    if (!$retval_itemInfo) {
+        echo '<p class=\"itemInfo\"><b>Error displaying item data...</b></p>';
+    }
+
+    $result_itemInfo = mysqli_query($conn, $sql_itemInfo) or die(mysqli_error($conn));
+
+    if (mysqli_num_rows($result_itemInfo) > 0) {
+        while ($row = mysqli_fetch_assoc($result_itemInfo)) {
+            $userID = $row['userID'];
+            $image = $row["image"];
+            echo '<div class="custom-item-profile">';
+            echo '<div style="float:left; width: 400px;" class="custom-div-section item-section extra-margin-left">';
+            echo "<h2 align=\"left\" class=\"col-12 tm-section-title\" style=\"margin-bottom:10px\"><b>{$row['itemName']}</b></h2>";
+            echo "<p class=\"itemInfo\"><b>Category:</b> {$row['category']}</p>";
+            echo "<p class=\"itemInfo\"><b>Color:</b> {$row['color']}</p>";
+            echo "<p class=\"itemInfo\"><b>Brand:</b> {$row['brand']}</p>";
+            echo "<p class=\"itemInfo\"><b>Description:</b> {$row['description']}</p>";
+            echo "<p class=\"itemInfo\"><b>Lost Date:</b> {$row['lost_date']}</p>";
+            echo "<p class=\"itemInfo\"><b>Lost Time:</b> {$row['lost_time']}</p>";
+            echo "<p class=\"itemInfo\"><b>Location Lost:</b> {$row['location']}</p>";
 
 
-        $sql_contact = "SELECT * FROM users
-                    WHERE ID = '$userID'";
-        $retval_contact = mysqli_query($conn, $sql_contact);
-        if (!$retval_contact) {
-            echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
-        }
-        $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
-        if (mysqli_num_rows($result_contact) > 0) {
-            while ($row = mysqli_fetch_assoc($result_contact)) {
-                echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
-                echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
-                echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+            $sql_contact = "SELECT * FROM users
+                        WHERE ID = '$userID'";
+            $retval_contact = mysqli_query($conn, $sql_contact);
+            if (!$retval_contact) {
+                echo "<p class=\"itemInfo\"><b>Unable to retrieve contact data!</b></p>";
             }
-        } else {
-            echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
+            $result_contact = mysqli_query($conn, $sql_contact) or die(mysqli_error($conn));
+            if (mysqli_num_rows($result_contact) > 0) {
+                while ($row = mysqli_fetch_assoc($result_contact)) {
+                    echo "<p class=\"itemInfo\"><b>Contact:</b> {$row['email']}</p>";
+                    echo "<p class=\"contact_additional2\">{$row['contact_no']}</p>";
+                    echo "<p class=\"contact_additional2\">{$row['address']}</p>";
+                }
+            } else {
+                echo "<p class=\"itemInfo\"><b>Unable to fetch contact data!</b></p>";
+            }
         }
-    }
-    echo '</div>';
-    echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
-    if ($image != null) {
-        echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+        echo '</div>';
+        echo '<div style="float:right;" class="custom-div-section item-section extra-margin-right">';
+        if ($image != null) {
+            echo '<img class="custom-item-image-medium" src="data:image/jpeg;base64,' . base64_encode($image) . '"/>';
+        } else {
+            echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+        }
+        echo '</div>';
+        echo '</div>';
     } else {
-        echo '<img class="custom-item-image-medium" src="img/nip.jpg"/>';
+        echo '<div style="background-color: #f8d7da; border: 1px solid #9A1717; padding: 10px; margin: 100px 50px;">';
+        echo '<p style="color: #9A1717;"><b>Unable to fetch item data!</b></p>';
+        echo '</div>';
     }
-    echo '</div>';
-    echo '</div>';
-} else {
-    echo "<p style=\"margin-left: 15px;\"><b>Unable to fetch item data!</b></p>";
 }
 
 mysqli_close($conn);
