@@ -110,30 +110,39 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user') {
 
         // Handle user activation/deactivation using prepared statements
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
-                $userID = $_POST['userID'];
-                $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
+            if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+                if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
+                    $userID = $_POST['userID'];
+                    $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
 
-                // Check if user has permission to manage users    
-                if ($rbac->hasPermission("manage_users", $permissions)) {
-                    $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
-                    $stmt = mysqli_prepare($conn, $updateStatusQuery);
-                    mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
+                    // Check if user has permission to manage users    
+                    if ($rbac->hasPermission("manage_users", $permissions)) {
+                        $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
+                        $stmt = mysqli_prepare($conn, $updateStatusQuery);
+                        mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
 
-                    $status = ($action == 'Activate') ? 1 : 0;
-                    mysqli_stmt_execute($stmt);
+                        $status = ($action == 'Activate') ? 1 : 0;
+                        mysqli_stmt_execute($stmt);
 
-                    mysqli_stmt_close($stmt);
+                        mysqli_stmt_close($stmt);
 
-                    $_SESSION['success_message'] = 'Action completed successfully!';
-                    header("Location: manageusers.php?status=success"); // Redirect to the same page to avoid resubmission
-                    exit();
-                } else {
-                    // Handle invalid user or display an error message
-                    echo "Invalid user or unauthorized action.";
+                        $_SESSION['success_message'] = 'Action completed successfully!';
+                        header("Location: manageusers.php?status=success"); // Redirect to the same page to avoid resubmission
+                        exit();
+                    } else {
+                        // Handle invalid user or display an error message
+                        echo "Invalid user or unauthorized action.";
+                    }
                 }
+            } else {
+                // prompt user to login again
+                echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
+
+                // redirect to login page
+                echo '<script>window.location.href = "../login.php";</script>';
             }
         }
+
 
         echo '<main>';
         echo '<header class="row tm-welcome-section">';
@@ -170,6 +179,9 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user') {
                 echo '<form action="manageusers.php" method="POST">';
                 echo '<input type="hidden" name="userID" value="' . $row['ID'] . '"/>';
 
+                // add csrf token in the form
+                echo '<input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">';
+
                 // Check if the user is active, if so, hide the activate button
                 if ($row['status'] == 1) {
                     echo '<button type="submit" class="custom-button" name="deactivate">Deactivate</button>';
@@ -190,30 +202,38 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user') {
 
         // Handle user activation/deactivation using prepared statements
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
-                // Additional checks can be added here if needed
-                $userID = $_POST['userID'];
-                $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
+            if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+                if (isset($_POST['activate']) || isset($_POST['deactivate'])) {
+                    // Additional checks can be added here if needed
+                    $userID = $_POST['userID'];
+                    $action = isset($_POST['activate']) ? 'Activate' : 'Deactivate';
 
-                // Allow user activation/deactivation only for non-admin and non-superadmin roles
-                $userQuery = "SELECT * FROM users WHERE ID = $userID AND role NOT IN ('admin', 'superadmin')";
-                $userResult = mysqli_query($conn, $userQuery);
+                    // Allow user activation/deactivation only for non-admin and non-superadmin roles
+                    $userQuery = "SELECT * FROM users WHERE ID = $userID AND role NOT IN ('admin', 'superadmin')";
+                    $userResult = mysqli_query($conn, $userQuery);
 
-                if ($userResult && mysqli_num_rows($userResult) > 0) {
-                    $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
-                    $stmt = mysqli_prepare($conn, $updateStatusQuery);
-                    mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
+                    if ($userResult && mysqli_num_rows($userResult) > 0) {
+                        $updateStatusQuery = "UPDATE users SET status = ? WHERE ID = ?";
+                        $stmt = mysqli_prepare($conn, $updateStatusQuery);
+                        mysqli_stmt_bind_param($stmt, "ii", $status, $userID);
 
-                    $status = ($action == 'Activate') ? 1 : 0;
-                    mysqli_stmt_execute($stmt);
+                        $status = ($action == 'Activate') ? 1 : 0;
+                        mysqli_stmt_execute($stmt);
 
-                    mysqli_stmt_close($stmt);
+                        mysqli_stmt_close($stmt);
 
-                    header("Refresh:0");
-                } else {
-                    // Handle invalid user or display an error message
-                    echo "Invalid user or unauthorized action.";
+                        header("Refresh:0");
+                    } else {
+                        // Handle invalid user or display an error message
+                        echo "Invalid user or unauthorized action.";
+                    }
                 }
+            } else {
+                // prompt user to login again
+                echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
+
+                // redirect to login page
+                echo '<script>window.location.href = "../login.php";</script>';
             }
         }
 

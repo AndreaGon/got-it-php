@@ -39,36 +39,43 @@ $dbPort = 3306;
 $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
 if (isset($_POST['submitted'])) {
+  if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+    $permissions = $rbac->getPermissions($_SESSION["role"]);
+    $isSuccess = false;
 
-  $permissions = $rbac->getPermissions($_SESSION["role"]);
-  $isSuccess = false;
+    $itemName = $_POST['item'];
+    $category = $_POST['category'];
+    $color = $_POST['color'];
+    $brand = $_POST['brand'];
+    $description = $_POST['description'];
+    $date = $_POST['date'];
+    $time = $_POST['time'];
+    $location = $_POST['location'];
+    $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
 
-  $itemName = $_POST['item'];
-  $category = $_POST['category'];
-  $color = $_POST['color'];
-  $brand = $_POST['brand'];
-  $description = $_POST['description'];
-  $date = $_POST['date'];
-  $time = $_POST['time'];
-  $location = $_POST['location'];
-  $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
+    if (empty($color)) $color = NULL;
+    if (empty($brand)) $brand = NULL;
 
-  if (empty($color)) $color = NULL;
-  if (empty($brand)) $brand = NULL;
+    if ($rbac->hasPermission("add_found_item", $permissions)) {
 
-  if ($rbac->hasPermission("add_found_item", $permissions)) {
-
-    $query = "INSERT INTO found_items (userID, itemName, category, color, brand, description, found_date, found_time, location, image, status)
+      $query = "INSERT INTO found_items (userID, itemName, category, color, brand, description, found_date, found_time, location, image, status)
       VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "'," . '0' . ")";
 
-    if ($conn->query($query) === TRUE) {
-      $isSuccess = true;
+      if ($conn->query($query) === TRUE) {
+        $isSuccess = true;
+      }
+    } else {
+      echo '<span>NO PERMISSIONS</span>';
     }
-  } else {
-    echo '<span>NO PERMISSIONS</span>';
-  }
 
-  $conn->close();
+    $conn->close();
+  } else {
+    // prompt user to login again
+    echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
+
+    // redirect to login page
+    echo '<script>window.location.href = "login.php";</script>';
+  }
 }
 echo '<!DOCTYPE html>';
 echo '<html>';
@@ -138,6 +145,7 @@ if (isset($_POST['submitted'])) {
     echo '<span>Item report failed</span>';
   }
 }
+echo '<input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">';
 echo '<div style="float:left;" class="custom-div-section">';
 echo '<div class="custom-section">';
 echo '<h4>Name of Item Found</h4>';

@@ -46,6 +46,7 @@ if (isset($_POST['submitted'])) {
                 if ($row['status'] == 1) {
                     $loginSuccess = true;
 
+                    session_start(); //start the session
                     // Set session variables
                     $_SESSION['userID'] = $row['ID'];
                     $_SESSION['role'] =  $row['roleId'];
@@ -54,8 +55,8 @@ if (isset($_POST['submitted'])) {
                     // Regenerate the session ID
                     session_regenerate_id(true);
 
-                    // Generate a random token
-                    $token = bin2hex(random_bytes(16));
+                // generate a random token
+                $token = bin2hex(random_bytes(32));
 
                     // Store the token in the session variable
                     $_SESSION['token'] = $token;
