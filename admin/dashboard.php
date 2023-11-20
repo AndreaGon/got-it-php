@@ -150,7 +150,7 @@ if ($rbac->getRoleNameFromId($_SESSION['role']) == 'user') {
   echo '';
   echo '<div class="custom-center" style="width: 100%">';
   echo '<table class = "custom-table" border="1" width=1000 height=80>';
-  echo '<form action="admin.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
+  echo '<form action="dashboard.php" method="POST" style="float: left;margin-left: 5px;margin-right:5px;">
             <input type=\'hidden\' name=\'submitted\' value=\'true\'/>
             <input type="Submit" style="width:200px;" class="custom-button" name="submit" value="Start Automatic Match"/>
           </form>';
