@@ -142,13 +142,15 @@ function getDefaultImage()
                 if (isset($_POST['submitted']) && $isSuccess) {
                   echo '<span style="display: block; background-color: #9ffa91; padding: 20px;">Item reported successfully</span>';
               } elseif (isset($_POST['submitted']) && !$isSuccess) {
-                  echo '<div style="color: red; text-align: center;">Item report failed.</div><br>';
+                  echo '<div>';
+                  echo '<p style="color: red; ">Item report failed.</p>';
                   if (isset($locationError)) {
-                      echo '<div style="color: red; text-align: center;">Please select a location.</div><br>';
+                      echo '<p style="color: red;">Please select a location.</p>';
                   }
                   if (isset($categoryError)) {
-                      echo '<div style="color: red; text-align: center;">Please select a category.</div><br>';
+                      echo '<p style="color: red;">Please select a category.</p>';
                   }
+                  echo '</div>';
               }
                 ?>
             </header>
