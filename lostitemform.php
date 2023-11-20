@@ -28,7 +28,7 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 }
 
 // update the last activity timestamp
-$_SESSION['last_activity'] = time()-1900;
+$_SESSION['last_activity'] = time();
 
 $dbServername = "localhost";
 $dbUsername = "root";
@@ -38,40 +38,48 @@ $dbPort = 3306;
 
 $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 
-
 if (isset($_POST['submitted'])) {
-  $permissions = $rbac->getPermissions($_SESSION["role"]);
-  $isSuccess = false;
+  if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
+    $permissions = $rbac->getPermissions($_SESSION["role"]);
+    $isSuccess = false;
 
-  $itemName = $_POST['item'];
-  $category = $_POST['category'];
-  $color = $_POST['color'];
-  $brand = $_POST['brand'];
-  $description = $_POST['description'];
-  $date = $_POST['date'];
-  $time = $_POST['time'];
-  $location = $_POST['location'];
-  $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
+    $itemName = $_POST['item'];
+    $category = $_POST['category'];
+    $color = $_POST['color'];
+    $brand = $_POST['brand'];
+    $description = $_POST['description'];
+    $date = $_POST['date'];
+    $time = $_POST['time'];
+    $location = $_POST['location'];
+    $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
 
-  if (empty($color)) $color = NULL;
-  if (empty($brand)) $brand = NULL;
+    if (empty($color)) $color = NULL;
+    if (empty($brand)) $brand = NULL;
 
-  if ($rbac->hasPermission("add_lost_item", $permissions)) {
+    if ($rbac->hasPermission("add_lost_item", $permissions)) {
 
 
-    $query = "INSERT INTO lost_items (userID, itemName, category, color, brand, description, lost_date, lost_time, location, image, status)
+      $query = "INSERT INTO lost_items (userID, itemName, category, color, brand, description, lost_date, lost_time, location, image, status)
       VALUES " . "('" . $_SESSION['userID'] . "','" . $itemName . "','" . $category . "','" . $color . "', '" . $brand . "', '" . $description . "', '" . $date . "', '" . $time . "', '" . $location . "','" . $image . "'," . '0' . ")";
 
-    if ($conn->query($query) === TRUE) {
-      $isSuccess = true;
+      if ($conn->query($query) === TRUE) {
+        $isSuccess = true;
+      }
+    } else {
+      echo '<span>NO PERMISSIONS</span>';
     }
+
+
+    $conn->close();
   } else {
-    echo '<span>NO PERMISSIONS</span>';
+    // prompt user to login again
+    echo '<script>alert("Invalid session token. Please log in and try again.");</script>';
+
+    // redirect to login page
+    echo '<script>window.location.href = "login.php";</script>';
   }
-
-
-  $conn->close();
 }
+
 echo '<!DOCTYPE html>';
 echo '<html>';
 echo '';
@@ -138,6 +146,7 @@ if (isset($_POST['submitted'])) {
     echo '<span>Item report failed</span>';
   }
 }
+echo '<input type="hidden" name="csrf_token" value="' . $_SESSION['token'] . '">';
 echo '<div style="float:left;" class="custom-div-section">';
 echo '<div class="custom-section">';
 echo '<h4>Name of Item Lost</h4>';
