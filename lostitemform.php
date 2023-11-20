@@ -138,6 +138,7 @@ function getDefaultImage()
 
         <main>
             <header class="row tm-welcome-section">
+            <h2 class="col-12 text-center tm-section-title">Submit a Lost Item</h2>
                 <?php
                 if (isset($_POST['submitted']) && $isSuccess) {
                   echo '<span style="display: block; background-color: #9ffa91; padding: 20px;">Item reported successfully</span>';
