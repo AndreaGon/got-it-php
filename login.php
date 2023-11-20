@@ -55,8 +55,8 @@ if (isset($_POST['submitted'])) {
                     // Regenerate the session ID
                     session_regenerate_id(true);
 
-                // generate a random token
-                $token = bin2hex(random_bytes(32));
+                    // generate a random token
+                    $token = bin2hex(random_bytes(32));
 
                     // Store the token in the session variable
                     $_SESSION['token'] = $token;
@@ -65,9 +65,14 @@ if (isset($_POST['submitted'])) {
                         header("location: admin/dashboard.php");
                         exit;
                     } else {
-                        // Redirecting the user to the home page
-                        header("location: index.php");
-                        exit;
+                        if (file_exists('index.php')) {
+                            header("Location: index.php");
+                            exit;
+                        } else {
+                            // If file doesn't exist, redirect to error_page.php
+                            header("Location: error_page.php");
+                            exit;
+                        }
                     }
                 } else {
                     // User is inactive, set the loginSuccess flag to false
@@ -88,6 +93,7 @@ if (isset($_POST['submitted'])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -97,6 +103,7 @@ if (isset($_POST['submitted'])) {
     <link href="css/templatemo-style.css" rel="stylesheet" />
     <link href="css/custom.css" media="all" rel="stylesheet" />
 </head>
+
 <body>
     <!-- Header + Navigation Bar -->
     <div class="container">
@@ -108,7 +115,7 @@ if (isset($_POST['submitted'])) {
                     <div class="row tm-header-inner">
                         <div class="col-md-6 col-12">
                             <div class="tm-site-text-box">
-                                <img class="tm-site-logo" width="150" src="img/logo.png"/>
+                                <img class="tm-site-logo" width="150" src="img/logo.png" />
                             </div>
                         </div>
                         <nav class="col-md-6 col-12 tm-nav">
@@ -135,7 +142,7 @@ if (isset($_POST['submitted'])) {
             <header class="row tm-welcome-section">
                 <h2 class="col-12 text-center tm-section-title">Login to your Account</h2>
             </header>
-            
+
             <div class="tm-container-login" style="width: 70%">
                 <form action="login.php" method="POST" class="tm-login-form">
                     <?php
@@ -182,4 +189,5 @@ if (isset($_POST['submitted'])) {
     <script src="js/jquery.min.js"></script>
     <script src="js/parallax.min.js"></script>
 </body>
+
 </html>
