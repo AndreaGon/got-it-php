@@ -78,6 +78,7 @@ if (isset($_POST['submitted'])) {
       ]);
       $response = curl_exec($curl);
       curl_close($curl);
+      header("refresh: 0"); 
       break;
   }
 }
