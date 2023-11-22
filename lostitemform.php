@@ -32,20 +32,21 @@ $conn = mysqli_connect($dbServername, $dbUsername, $dbPassword, $dbName);
 // Initialize error messages
 $locationError = '';
 $categoryError = '';
+$descriptionError = '';
 
 if (isset($_POST['submitted'])) {
     if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
         $permissions = $rbac->getPermissions($_SESSION["role"]);
         $isSuccess = false;
 
-        $itemName = $_POST['item'];
-        $category = isset($_POST['category']) ? $_POST['category'] : '';
-        $color = $_POST['color'];
-        $brand = $_POST['brand'];
-        $description = $_POST['description'];
-        $date = $_POST['date'];
-        $time = $_POST['time'];
-        $location = isset($_POST['location']) ? $_POST['location'] : '';
+        $itemName = mysqli_real_escape_string($conn, $_POST['item']);
+        $category = isset($_POST['category']) ? mysqli_real_escape_string($conn, $_POST['category']) : '';
+        $color = mysqli_real_escape_string($conn, $_POST['color']);
+        $brand = mysqli_real_escape_string($conn, $_POST['brand']);
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $date = mysqli_real_escape_string($conn, $_POST['date']);
+        $time = mysqli_real_escape_string($conn, $_POST['time']);
+        $location = isset($_POST['location']) ? mysqli_real_escape_string($conn, $_POST['location']) : '';
         $image = isset($_FILES['image']['tmp_name']) && !empty($_FILES['image']['tmp_name']) ? addslashes(file_get_contents($_FILES['image']['tmp_name'])) : getDefaultImage();
 
         if (empty($color)) $color = NULL;
@@ -54,6 +55,7 @@ if (isset($_POST['submitted'])) {
         // Validate location and category
         $locationError = empty($location) ? '<span style="color: red;">Please select a location.</span>' : '';
         $categoryError = empty($category) ? '<span style="color: red;">Please select a category.</span>' : '';
+        $descriptionError = empty($description) ? '<span style="color: red;">Please enter a description.</span>' : '';
 
         if (empty($locationError) && empty($categoryError)) {
             if ($rbac->hasPermission("add_lost_item", $permissions)) {
@@ -69,7 +71,7 @@ if (isset($_POST['submitted'])) {
         } else {
             // Display error message at the top of the form
             $error_message = '<h2 class="col-12 text-center tm-section-title">Submit a Lost Item</h2>';
-            $error_message .= '<br>' . $locationError . '<br>' . $categoryError;
+            $error_message .= '<br>' . $locationError . '<br>' . $categoryError . '<br>' . $descriptionError;
         }
 
         $conn->close();

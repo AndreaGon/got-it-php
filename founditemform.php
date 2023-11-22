@@ -47,14 +47,14 @@ if (isset($_POST['submitted'])) {
     ) {
         $permissions = $rbac->getPermissions($_SESSION["role"]);
 
-        $itemName = $_POST['item'];
-        $category = $_POST['category'];
-        $color = $_POST['color'];
-        $brand = $_POST['brand'];
-        $description = $_POST['description'];
-        $date = $_POST['date'];
-        $time = $_POST['time'];
-        $location = $_POST['location'];
+        $itemName = mysqli_real_escape_string($conn, $_POST['item']);
+        $category = mysqli_real_escape_string($conn, $_POST['category']);
+        $color = mysqli_real_escape_string($conn, $_POST['color']);
+        $brand = mysqli_real_escape_string($conn, $_POST['brand']);
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $date = mysqli_real_escape_string($conn, $_POST['date']);
+        $time = mysqli_real_escape_string($conn, $_POST['time']);
+        $location = mysqli_real_escape_string($conn, $_POST['location']);
 
         // Check for the uploaded image
         $image = isset($_FILES['image']['tmp_name']) && !empty($_FILES['image']['tmp_name']) ? addslashes(file_get_contents($_FILES['image']['tmp_name'])) : null;
@@ -75,13 +75,14 @@ if (isset($_POST['submitted'])) {
 
         $conn->close();
     } 
-    if (empty($_POST['category']) || empty($_POST['location'])) {
-      $error_message .= '<div style="color: red; text-align: center;">Please fill in the required fields (Category, Location)</div>';
+    if (empty($category) || empty($location) || empty($description)) {
+        $error_message .= '<div style="color: red; text-align: center;">Please fill in the required fields (Category, Location, Description)</div><br>';
     }
-  
+    
     if (empty($_FILES['image']['tmp_name']) || $_FILES['image']['size'] == 0) {
-      $error_message .= '<div style="color: red; text-align: center;">Please upload an image as evidence for the found item.</div>';
+        $error_message .= '<div style="color: red; text-align: center;">Please upload an image as evidence for the found item.</div><br>';
     }
+    
 }
 ?>
 

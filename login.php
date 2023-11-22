@@ -29,11 +29,11 @@ $loginSuccess = false;
 $credential_error = '';
 
 if (isset($_POST['submitted'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
 
     // Pulling a certain section of the database into the scope of the code
-    $credentials = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
+    $credentials = "SELECT * FROM users WHERE email = '$email'";
     $result_login = $conn->query($credentials);
 
     // Validating credentials
@@ -43,40 +43,46 @@ if (isset($_POST['submitted'])) {
     } else {
         if ($result_login->num_rows > 0) {
             while ($row = mysqli_fetch_assoc($result_login)) {
-                if ($row['status'] == 1) {
-                    $loginSuccess = true;
-
-                    session_start(); //start the session
-                    // Set session variables
-                    $_SESSION['userID'] = $row['ID'];
-                    $_SESSION['role'] =  $row['roleId'];
-                    $_SESSION['loggedin'] = true;
-
-                    // Regenerate the session ID
-                    session_regenerate_id(true);
-
-                    // generate a random token
-                    $token = bin2hex(random_bytes(32));
-
-                    // Store the token in the session variable
-                    $_SESSION['token'] = $token;
-
-                    if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin") {
-                        header("location: admin/dashboard.php");
-                        exit;
-                    } else {
-                        if (file_exists('index.php')) {
-                            header("Location: index.php");
+                if(password_verify($password, $row['password'])) {
+                    // Email and password match data in the database, set the loginSuccess flag to true
+                    if ($row['status'] == 1) {
+                        $loginSuccess = true;
+    
+                        session_start(); //start the session
+                        // Set session variables
+                        $_SESSION['userID'] = $row['ID'];
+                        $_SESSION['role'] =  $row['roleId'];
+                        $_SESSION['loggedin'] = true;
+    
+                        // Regenerate the session ID
+                        session_regenerate_id(true);
+    
+                        // generate a random token
+                        $token = bin2hex(random_bytes(32));
+    
+                        // Store the token in the session variable
+                        $_SESSION['token'] = $token;
+    
+                        if ($rbac->getRoleNameFromId($row['roleId']) == "admin" || $rbac->getRoleNameFromId($row['roleId']) == "superadmin") {
+                            header("location: admin/dashboard.php");
                             exit;
                         } else {
-                            // If file doesn't exist, redirect to error_page.php
-                            header("Location: error_page.php");
-                            exit;
+                            if (file_exists('index.php')) {
+                                header("Location: index.php");
+                                exit;
+                            } else {
+                                // If file doesn't exist, redirect to error_page.php
+                                header("Location: error_page.php");
+                                exit;
+                            }
                         }
+                    } else {
+                        // User is inactive, set the loginSuccess flag to false
+                        $credential_error = "Your account is inactive.";
                     }
                 } else {
-                    // User is inactive, set the loginSuccess flag to false
-                    $credential_error = "Your account is inactive.";
+                    // Email and password do not match data in the database, set the loginSuccess flag to false
+                    $credential_error = "Invalid password.";
                 }
             }
         } else {
