@@ -41,11 +41,13 @@ $permissions = $rbac->getPermissions($_SESSION["role"]);
 
 if (isset($_POST['submitted'])) {
   if (isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['token']) {
-    $adminName = $_POST['adminName'];
-    $role_name = $_POST['role'];
-    $contact_number = $_POST['contact'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $adminName = mysqli_real_escape_string($conn, $_POST['adminName']);
+    $role_name = mysqli_real_escape_string($conn, $_POST['role']);
+    $contact_number = mysqli_real_escape_string($conn, $_POST['contact']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
     if (
       $adminName == "" ||
@@ -66,7 +68,7 @@ if (isset($_POST['submitted'])) {
       } else {
         //if user does not exist in database
         $query = "INSERT INTO users (username, email, password, contact_no, roleId)
-          VALUES " . "('" . $adminName . "','" . $email . "','" . $password . "','" . $contact_number . "', '" . $rbac->getRoleIdFromName($role_name) . "')";
+          VALUES " . "('" . $adminName . "','" . $email . "','" . $hashed_password . "','" . $contact_number . "', '" . $rbac->getRoleIdFromName($role_name) . "')";
 
 
         if ($conn->query($query) === TRUE) {
